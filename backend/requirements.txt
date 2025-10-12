@@ -12,7 +12,5 @@ celery
 spacy
 PyMuPDF
 python-docx
-selenium
-linkedin-scraper
 google-generativeai
 

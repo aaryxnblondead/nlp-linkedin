@@ -1,0 +1,4 @@
+# Optional scraping stack for LinkedIn ingestion
+-r requirements.txt
+selenium
+linkedin-scraper
