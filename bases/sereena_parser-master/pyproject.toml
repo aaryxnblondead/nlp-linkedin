@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sereena-parser"
+version = "1.0.0"
+description = "Production-ready resume parser with multi-threading support for PDF and DOCX files"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Linguistic",
+    "Topic :: Office/Business",
+]
+keywords = ["resume", "parser", "cv", "pdf", "docx", "nlp", "recruitment"]
+requires-python = ">=3.8"
+dependencies = [
+    "PyPDF2>=3.0.1",
+    "pdfplumber>=0.10.3",
+    "python-docx>=1.1.0",
+    "spacy>=3.7.2",
+    "pandas>=2.1.4",
+    "email-validator>=2.1.0",
+    "numpy>=1.25.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.3",
+    "pytest-cov>=4.1.0",
+    "black>=23.11.0",
+    "flake8>=6.1.0",
+]
+
+[project.scripts]
+sereena-parser = "sereena_parser.main:cli_main"
+
+[project.urls]
+Homepage = "https://github.com/yourusername/sereena-parser"
+Repository = "https://github.com/yourusername/sereena-parser"
+"Bug Tracker" = "https://github.com/yourusername/sereena-parser/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["sereena_parser*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38']

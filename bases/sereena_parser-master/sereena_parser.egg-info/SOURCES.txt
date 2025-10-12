@@ -1,0 +1,13 @@
+LICENSE
+README.md
+pyproject.toml
+setup.py
+sereena_parser/__init__.py
+sereena_parser/main.py
+sereena_parser.egg-info/PKG-INFO
+sereena_parser.egg-info/SOURCES.txt
+sereena_parser.egg-info/dependency_links.txt
+sereena_parser.egg-info/entry_points.txt
+sereena_parser.egg-info/requires.txt
+sereena_parser.egg-info/top_level.txt
+tests/test_main.py

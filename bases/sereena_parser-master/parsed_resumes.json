@@ -1,0 +1,56 @@
+{
+  "example1.pdf": {
+    "resume_data": {
+      "personal_info": {
+        "name": "John W. Smith",
+        "email": "jwsmith@colostate.edu",
+        "phone": null,
+        "location": null
+      },
+      "skills": [
+        "C",
+        "R"
+      ],
+      "education": [
+        {
+          "degree": "BS in Early Childhood Development (1999)",
+          "institution": "Early Childhood Development",
+          "year": "19",
+          "gpa": null
+        },
+        {
+          "degree": "BA in Elementary",
+          "institution": "Early Childhood Development",
+          "year": null,
+          "gpa": null
+        }
+      ],
+      "experience": [],
+      "certifications": [],
+      "languages": [],
+      "summary": "Functional Resume Sample\nJohn W. Smith\n2002 Front Range Way Fort Collins, CO 80525\njwsmith@colostate. edu\nCareer Summary\nFour years experience in early childhood development with a diverse background in the care of\nspecial needs children and adults.",
+      "raw_text": "Functional Resume Sample\nJohn W. Smith\n2002 Front Range Way Fort Collins, CO 80525\njwsmith@colostate.edu\nCareer Summary\nFour years experience in early childhood development with a diverse background in the care of\nspecial needs children and adults.\nAdult Care Experience\n• Determined work placement for 150 special needs adult clients.\n• Maintained client databases and records.\n• Coordinated client contact with local health care professionals on a monthly basis.\n• Managed 25 volunteer workers.\nChildcare Experience\n• Coordinated service assignments for 20 part-time counselors and 100 client families.\n• Oversaw daily activity and outing planning for 100 clients.\n• Assisted families of special needs clients with researching financial assistance and\nhealthcare.\n• Assisted teachers with managing daily classroom activities.\n• Oversaw daily and special student activities.\nEmployment History\n1999-2002 Counseling Supervisor, The Wesley Center, Little Rock, Arkansas.\n1997-1999 Client Specialist, Rainbow Special Care Center, Little Rock, Arkansas\n1996-1997 Teacher’s Assistant, Cowell Elementary, Conway, Arkansas\nEducation\nUniversity of Arkansas at Little Rock, Little Rock, AR\n• BS in Early Childhood Development (1999)\n• BA in Elementary Education (1998)\n• GPA (4.0 Scale): Early Childhood Development – 3.8, Elementary Education – 3.5,\nOverall 3.4.\n• Dean’s List, Chancellor’s List"
+    },
+    "insights": {
+      "profile_completeness": 50.0,
+      "skill_categories": {
+        "programming": [
+          "C",
+          "R"
+        ]
+      },
+      "experience_summary": {
+        "total_positions": 0,
+        "companies": [],
+        "job_titles": [],
+        "estimated_years": 0
+      },
+      "education_level": "BS in Early Childhood Development (1999)",
+      "career_progression": "Insufficient data for analysis",
+      "technical_score": 12,
+      "language_diversity": 0,
+      "certification_count": 0
+    },
+    "parsing_timestamp": "2025-09-23 16:08:51"
+  }
+}

@@ -1,0 +1,2 @@
+[console_scripts]
+sereena-parser = sereena_parser.main:cli_main

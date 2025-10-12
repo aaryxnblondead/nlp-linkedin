@@ -1,0 +1,6 @@
+2025-09-23 16:08:50,867 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-09-23 16:08:50,869 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-09-23 16:08:50,869 - sereena_parser.main - INFO - Starting batch processing of 1 files
+2025-09-23 16:08:51,189 - sereena_parser.main - INFO - Successfully parsed example1.pdf in 0.32s
+2025-09-23 16:08:51,190 - sereena_parser.main - INFO - Batch processing complete: 1 successful, 0 failed
+2025-09-23 16:08:51,191 - sereena_parser.main - INFO - Results exported to parsed_resumes.json

@@ -1,0 +1,113 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        - SPACY_MODEL=${SPACY_MODEL}
+    environment:
+      PYTHONPATH: /app
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SERVER: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: ${REDIS_URL}
+      SPACY_MODEL: ${SPACY_MODEL}
+      # LLM/Embeddings
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GEN_PROVIDER: ${GEN_PROVIDER}
+      GEMINI_MODEL_ID: ${GEMINI_MODEL_ID}
+      HF_TOKEN: ${HF_TOKEN}
+      HF_MODEL_ID: ${HF_MODEL_ID}
+      # Flags
+      USE_GENERATOR: ${USE_GENERATOR}
+      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY}
+      USE_LLM_NAME: ${USE_LLM_NAME}
+      USE_LLM_SKILLS_ENRICH: ${USE_LLM_SKILLS_ENRICH}
+      USE_LLM_SCORING: ${USE_LLM_SCORING}
+      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH}
+      CHROMA_DIR: ${CHROMA_DIR}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      EXTRA_CORS_ORIGINS: ${EXTRA_CORS_ORIGINS}
+      # CORS_ORIGIN_REGEX: ${CORS_ORIGIN_REGEX}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploaded_resumes
+      - chromadb:/app/${CHROMA_DIR}
+
+  celery:
+    build:
+      context: ./backend
+      args:
+        - SPACY_MODEL=${SPACY_MODEL}
+    command: celery -A app.worker.celery_app.celery_app worker --loglevel=info
+    environment:
+      PYTHONPATH: /app
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_SERVER: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: ${REDIS_URL}
+      SPACY_MODEL: ${SPACY_MODEL}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
+      GEN_PROVIDER: ${GEN_PROVIDER}
+      GEMINI_MODEL_ID: ${GEMINI_MODEL_ID}
+      HF_TOKEN: ${HF_TOKEN}
+      HF_MODEL_ID: ${HF_MODEL_ID}
+      USE_GENERATOR: ${USE_GENERATOR}
+      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY}
+      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH}
+      CHROMA_DIR: ${CHROMA_DIR}
+    depends_on:
+      backend:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploaded_resumes
+      - chromadb:/app/${CHROMA_DIR}
+
+  # Unified-origin frontend via Nginx reverse proxy to backend
+  web:
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  pgdata:
+  uploads:
+  chromadb:

@@ -1,0 +1,687 @@
+"""
+NER service: spaCy + targeted regex/rules for resumes.
+
+Contract:
+- extract_resume_entities(text: str) -> dict with keys:
+  - name: str | None
+  - email: str | None
+  - phone: str | None
+  - linkedin: str | None
+  - skills: List[str]
+  - locations: List[str]
+  - organizations: List[str]
+  - titles: List[str]
+  - dates: List[str]
+  - education: List[dict] (degree, field, institution, start, end)
+  - experience: List[dict] (title, company, location, start, end, snippet)
+
+Design notes:
+- Tries spaCy `en_core_web_sm`; falls back to a lightweight blank('en') + EntityRuler
+- Uses PhraseMatcher for skills & titles; regex for email/phone/linkedin/dates
+"""
+from __future__ import annotations
+
+from typing import List, Dict, Any, Optional, Tuple
+import re
+import os
+
+try:
+    import spacy
+    from spacy.matcher import PhraseMatcher
+    from spacy.pipeline import EntityRuler
+except Exception:  # pragma: no cover
+    spacy = None
+    PhraseMatcher = None
+    EntityRuler = None
+
+_NLP = None  # lazy-loaded spaCy model
+_SKILL_MATCHER = None
+_TITLE_MATCHER = None
+
+
+SKILLS_DB = [
+    # Programming languages
+    "python", "java", "c", "c++", "c#", "go", "golang", "rust", "ruby", "php", "scala", "kotlin",
+    # Data/ML
+    "sql", "mysql", "postgresql", "mongodb", "pandas", "numpy", "scikit-learn", "sklearn", "pytorch", "tensorflow",
+    "nlp", "computer vision", "deep learning", "machine learning", "data analysis", "etl",
+    # Web/Backend
+    "javascript", "typescript", "node", "nodejs", "express", "react", "angular", "vue", "next.js", "nextjs", "django", "flask", "fastapi",
+    # DevOps/Cloud
+    "docker", "kubernetes", "helm", "terraform", "ansible", "jenkins", "git", "github actions",
+    "aws", "azure", "gcp", "cloudwatch", "lambda", "s3", "ec2",
+    # Other
+    "spark", "hadoop", "airflow", "kafka", "snowflake", "databricks", "tableau", "power bi",
+    # Cloud/data extras
+    "redshift", "bigquery", "athena", "glue", "emr", "lake formation", "looker",
+    # Testing/QA
+    "pytest", "unittest", "cypress", "playwright",
+    # Messaging/queues
+    "rabbitmq", "sqs", "pubsub",
+    # Infra/observability
+    "prometheus", "grafana", "opentelemetry", "elk", "elasticsearch", "logstash", "kibana",
+    # Mobile
+    "react native", "flutter", "swift", "kotlin",
+    # Security
+    "owasp", "burp suite", "metasploit", "nessus", "siem", "splunk", "crowdstrike", "wazuh", "okta", "auth0", "iam",
+    # Analytics/BI
+    "powerbi", "power bi", "looker studio", "qlik", "superset",
+    # Data engineering extras
+    "dbt", "airbyte", "fivetran", "delta lake", "iceberg", "hudi",
+    # Frontend extras
+    "redux", "zustand", "vite", "webpack", "babel",
+    # Backend extras
+    "spring", "spring boot", "hibernate", "asp.net", ".net core", "laravel", "symfony", "rails",
+    # MLOps/Observability
+    "mlflow", "tensorboard", "wandb", "seldon", "bentoml", "ray", "ray serve",
+    # Messaging extras
+    "nats", "mqtt",
+    # Misc
+    "grpc", "rest", "graphQL", "graphql", "openapi", "swagger",
+]
+
+TITLES_DB = [
+    "software engineer", "senior software engineer", "staff software engineer", "principal engineer",
+    "data scientist", "senior data scientist", "machine learning engineer", "ml engineer",
+    "data engineer", "devops engineer", "site reliability engineer", "sre",
+    "product manager", "product owner", "project manager", "program manager", "business analyst", "qa engineer", "test engineer",
+    "frontend engineer", "backend engineer", "full stack engineer", "full-stack engineer", "intern", "analyst",
+    "data analyst", "research scientist", "solutions architect", "cloud architect", "engineering manager",
+    "technical lead", "tech lead", "principal software engineer", "ai engineer", "mlops engineer",
+    # Security
+    "security engineer", "application security engineer", "soc analyst", "security analyst", "devsecops engineer",
+    # Data platform
+    "analytics engineer", "data platform engineer",
+    # QA variants
+    "quality assurance engineer", "sdet", "software development engineer in test",
+    # Infra/SRE variants
+    "platform engineer", "infrastructure engineer",
+]
+
+# Post-filters to reduce false positives
+ORG_STOPWORDS = {
+    "computer science", "information technology", "curriculum vitae", "resume", "summary",
+}
+LOC_STOPWORDS = {
+    "remote", "onsite", "hybrid",
+}
+
+# Words/phrases that strongly indicate a non-name heading or label near the top of resumes
+NAME_HEADING_STOP = {
+    "mobile", "mobile no", "phone", "email", "curriculum vitae", "resume", "profile",
+    "product demos", "skills", "technical skills", "education", "experience", "projects",
+    "summary", "objective", "visa status", "java", "html5", "html", "python", "aws",
+}
+
+DEGREE_PATTERNS = r"\b((b\.?s\.?|bsc|ba|be|b\.e\.|beng|b\.eng|bca|m\.?s\.?|msc|ma|me|m\.e\.|meng|m\.eng|mca|m\.?tech|mtech|b\.?tech|btech|ph\.?d\.?|phd|bachelor|master|doctorate)([^\n\r,)]{0,40})?)\b"
+INSTITUTION_HINT = r"\b(university|college|institute|school|polytechnic|iit|nit|state|tech)\b"
+UNI_COLLEGE_PATTERN = r"\b[A-Z][A-Za-z&\-\.\s]{1,80}(University|College|Institute|School|Polytechnic)\b"
+IIT_NIT_PATTERN = r"\b(?:IIT|NIT)\s+[A-Z][A-Za-z\-\s]{1,50}\b"
+
+
+def _get_nlp():
+    global _NLP, _SKILL_MATCHER, _TITLE_MATCHER
+    if _NLP is not None:
+        return _NLP
+    if spacy is None:
+        _NLP = None
+        return _NLP
+    # Try environment override first
+    model = os.getenv("SPACY_MODEL", "en_core_web_sm")
+    try:
+        _NLP = spacy.load(model, disable=["lemmatizer"])  # lemmatizer not needed for NER
+    except Exception:
+        # Try auto-download if allowed
+        allow_dl = os.getenv("ALLOW_SPACY_DOWNLOAD", "false").lower() == "true"
+        if allow_dl:
+            try:
+                from spacy.cli.download import download as spacy_download
+                spacy_download(model)  # type: ignore
+                _NLP = spacy.load(model, disable=["lemmatizer"])  # retry
+            except Exception:
+                _NLP = spacy.blank("en")
+        else:
+            # Fallback: blank English + basic EntityRuler
+            _NLP = spacy.blank("en")
+    # Add an EntityRuler for common ORGs and schools regardless of model
+    if EntityRuler:
+        try:
+            ruler = _NLP.add_pipe("entity_ruler", before="ner") if "ner" in _NLP.pipe_names else _NLP.add_pipe("entity_ruler")
+        except Exception:
+            ruler = _NLP.add_pipe("entity_ruler")
+        patterns = [
+            # Generic company suffixes
+            {"label": "ORG", "pattern": "Inc"},
+            {"label": "ORG", "pattern": "LLC"},
+            {"label": "ORG", "pattern": "Ltd"},
+            # Common tech companies (sample subset)
+            {"label": "ORG", "pattern": "Google"},
+            {"label": "ORG", "pattern": "Microsoft"},
+            {"label": "ORG", "pattern": "Amazon"},
+            {"label": "ORG", "pattern": "Meta"},
+            {"label": "ORG", "pattern": "Apple"},
+            {"label": "ORG", "pattern": "Netflix"},
+            # Common universities (sample subset)
+            {"label": "ORG", "pattern": "Stanford University"},
+            {"label": "ORG", "pattern": "Massachusetts Institute of Technology"},
+            {"label": "ORG", "pattern": "MIT"},
+            {"label": "ORG", "pattern": "University of California, Berkeley"},
+            {"label": "ORG", "pattern": "Carnegie Mellon University"},
+            # GPE examples
+            {"label": "GPE", "pattern": "United States"},
+            {"label": "GPE", "pattern": "India"},
+            {"label": "GPE", "pattern": "Canada"},
+        ]
+        ruler.add_patterns(patterns)
+    # Build PhraseMatchers
+    if PhraseMatcher is not None:
+        _SKILL_MATCHER = PhraseMatcher(_NLP.vocab, attr="LOWER")
+        _SKILL_MATCHER.add("SKILL", [ _NLP.make_doc(s) for s in SKILLS_DB ])
+        _TITLE_MATCHER = PhraseMatcher(_NLP.vocab, attr="LOWER")
+        _TITLE_MATCHER.add("TITLE", [ _NLP.make_doc(t) for t in TITLES_DB ])
+    return _NLP
+
+
+def _norm_ws(text: str) -> str:
+    return re.sub(r"\s+", " ", text or " ").strip()
+
+
+EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
+PHONE_RE = re.compile(
+    r"(?:(?:\+?\d{1,3}[\s.-]?)?(?:\(?\d{3}\)?[\s.-]?)\d{3}[\s.-]?\d{4})(?:\s*(?:x|ext\.?|#)\s*\d{1,6})?",
+    re.IGNORECASE,
+)
+ALT_PHONE_RE = re.compile(r"\+?\d[\d\s().-]{8,}\d")  # permissive international fallback
+LINKEDIN_RE = re.compile(r"https?://(www\.)?linkedin\.com/(in|pub|profile)/[A-Za-z0-9-_/%]+", re.IGNORECASE)
+DATE_RANGE_RE = re.compile(
+    r"\b(?:(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+\d{4}|\d{4})\s*(?:-|–|to|–>)\s*(?:Present|Current|\d{4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Sept|Oct|Nov|Dec)[a-z]*\.?\s+\d{4})\b",
+    re.IGNORECASE,
+)
+
+
+def _extract_email(text: str) -> Optional[str]:
+    m = EMAIL_RE.search(text)
+    return m.group(0) if m else None
+
+
+def _extract_phone(text: str) -> Optional[str]:
+    m = PHONE_RE.search(text)
+    if not m:
+        m = ALT_PHONE_RE.search(text)
+    if not m:
+        return None
+    phone = m.group(0)
+    # Normalize: remove non-digits except leading + and extension
+    ext_m = re.search(r"(x|ext\.?|#)\s*(\d{1,6})", phone, re.IGNORECASE)
+    digits = re.sub(r"[^\d+]", "", phone)
+    if digits.startswith("+1") and len(digits) > 2:
+        core = digits[2:]
+    elif digits.startswith("+"):
+        core = digits
+    elif len(digits) >= 10:
+        core = digits[-10:]
+    else:
+        core = digits
+    if core.startswith("+"):
+        normalized = core
+    elif len(core) == 10:
+        normalized = f"({core[0:3]}) {core[3:6]}-{core[6:10]}"
+    else:
+        normalized = core
+    if ext_m:
+        normalized = f"{normalized} x{ext_m.group(2)}"
+    return normalized
+
+
+def _extract_linkedin(text: str) -> Optional[str]:
+    m = LINKEDIN_RE.search(text)
+    return m.group(0) if m else None
+
+
+def _email_to_name(email: str) -> Optional[str]:
+    if not email or "@" not in email:
+        return None
+    local = email.split("@", 1)[0]
+    # Remove common prefixes/suffixes and digits
+    local = re.sub(r"\d+", "", local)
+    parts = re.split(r"[._-]+", local)
+    parts = [p for p in parts if p and p.lower() not in {"mail", "email", "gmail", "yahoo", "outlook", "hotmail"}]
+    if not parts:
+        return None
+    # Keep 2-3 tokens at most
+    cand = " ".join(parts[:3])
+    cand = " ".join([w.capitalize() for w in cand.split() if w])
+    if 3 <= len(cand) <= 80 and len(cand.split()) >= 2:
+        return cand
+    return None
+
+
+def _looks_like_bad_name(line: str) -> bool:
+    l = (line or "").strip().strip(":-•|")
+    ll = l.lower()
+    if not l:
+        return True
+    if any(w in ll for w in NAME_HEADING_STOP):
+        return True
+    # Single token or too many tokens
+    words = [w for w in re.split(r"[^A-Za-z]+", l) if w]
+    if len(words) == 1:
+        return True
+    if len(words) > 5:
+        return True
+    # All caps words or contains digits
+    if re.search(r"\d", l):
+        return True
+    if all(w.isupper() for w in words if w):
+        return True
+    return False
+
+
+def _extract_name(doc, text: str) -> Optional[str]:
+    # 0) Look for explicit label: "Name: ..."
+    for line in (text or "").splitlines()[:20]:
+        m = re.search(r"(?i)\bname\s*[:\-]\s*([A-Za-z ,.'-]{3,80})", line)
+        if m:
+            cand = _norm_ws(m.group(1))
+            if not _looks_like_bad_name(cand):
+                return cand
+
+    lines = (text or "").splitlines()
+    first_block = "\n".join(lines[:15])
+
+    # 1) spaCy PERSON entity near top
+    if doc is not None:
+        best = None
+        for ent in doc.ents:
+            if ent.label_ == "PERSON" and ent.start_char < len(first_block) + 1:
+                cand = _norm_ws(ent.text)
+                if not _looks_like_bad_name(cand) and 3 <= len(cand) <= 80:
+                    best = cand
+                    break
+        if best:
+            return best
+
+    # 2) Heuristic top lines
+    for line in lines[:8]:
+        if _looks_like_bad_name(line):
+            continue
+        tokens = [t for t in re.split(r"[^A-Za-z'-]", line) if t]
+        if 2 <= len(tokens) <= 4 and sum(1 for t in tokens if t[:1].isupper()) >= max(2, len(tokens)-1):
+            cand = _norm_ws(line)
+            if 3 <= len(cand) <= 80 and not EMAIL_RE.search(cand):
+                return cand
+
+    # 3) Derive from email if available
+    email = _extract_email(text)
+    if email:
+        en = _email_to_name(email)
+        if en:
+            return en
+
+    return None
+
+
+def _phrase_matches(matcher, doc) -> List[str]:
+    if matcher is None or doc is None:
+        return []
+    seen = set()
+    out = []
+    for mid, start, end in matcher(doc):
+        span = doc[start:end]
+        key = span.text.lower()
+        if key not in seen:
+            seen.add(key)
+            out.append(span.text)
+    return out
+
+
+def _collect_sections(text: str) -> Dict[str, str]:
+    # Very light section splitter by headers like "SKILLS", "EXPERIENCE", etc.
+    sections = {}
+    current = "__root__"
+    sections[current] = []
+    for line in text.splitlines():
+        header = line.strip().strip(":").lower()
+        if re.fullmatch(r"(summary|skills?|experience|work experience|education|educational background|educational qualifications|education details|academic background|academics|projects?|certifications?)", header):
+            current = header
+            sections[current] = []
+        else:
+            sections.setdefault(current, []).append(line)
+    return {k: "\n".join(v).strip() for k, v in sections.items()}
+
+
+def _extract_skills(doc, text: str, sections: Dict[str, str]) -> List[str]:
+    found = set()
+    # PhraseMatcher across whole doc
+    for s in _phrase_matches(_SKILL_MATCHER, doc):
+        found.add(s.lower())
+    # Heuristic: skills section comma/pipe-separated
+    skills_text = sections.get("skills") or ""
+    if skills_text:
+        for tok in re.split(r"[,|\u2022\n]+", skills_text.lower()):
+            t = tok.strip(r" :\-•\t")
+            if not t:
+                continue
+            if any(t == k or t in k or k in t for k in [k.lower() for k in SKILLS_DB]):
+                found.add(t)
+    # Return sorted unique
+    return sorted(found)
+
+
+def _extract_education(doc, text: str) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    lines = text.splitlines()
+    for i, line in enumerate(lines):
+        if not re.search(DEGREE_PATTERNS, line, re.IGNORECASE) and not re.search(INSTITUTION_HINT, line, re.IGNORECASE):
+            continue
+        # Look around a window of lines for degree/institution/date
+        window = " ".join(lines[max(0, i-1): i+2])
+        deg_m = re.search(DEGREE_PATTERNS, window, re.IGNORECASE)
+        # Institution: prefer explicit IIT/NIT forms like "IIT Delhi", else generic University/College/etc
+        inst_m2 = re.search(IIT_NIT_PATTERN, window)
+        inst_m1 = re.search(UNI_COLLEGE_PATTERN, window)
+        inst_text = None
+        if inst_m2:
+            inst_text = inst_m2.group(0)
+        elif inst_m1:
+            inst_text = inst_m1.group(0)
+        date_m = DATE_RANGE_RE.search(window)
+        item = {
+            "degree": _norm_ws(deg_m.group(1)) if deg_m else None,
+            "field": None,
+            "institution": _norm_ws(inst_text) if inst_text else None,
+            "start": None,
+            "end": None,
+        }
+        if date_m:
+            item["start"], item["end"] = _split_date_range(date_m.group(0))
+        # Basic field extraction: things after degree like in "B.Tech in CSE"
+        if item["degree"]:
+            fm = re.search(r"in\s+([A-Za-z&/\-\s]{2,40})", window, re.IGNORECASE)
+            if fm:
+                item["field"] = _norm_ws(fm.group(1))
+        if any(item.values()):
+            out.append(item)
+    return dedupe_dict_list(out)
+
+
+def _split_date_range(r: str) -> Tuple[Optional[str], Optional[str]]:
+    parts = re.split(r"\s*(?:-|–|to|–>)\s*", r, flags=re.IGNORECASE)
+    if len(parts) != 2:
+        return r, None
+    s, e = parts
+    return s.strip(), e.strip()
+
+
+def _extract_experience(doc, text: str) -> List[Dict[str, Any]]:
+    out: List[Dict[str, Any]] = []
+    lines = [l for l in text.splitlines() if l.strip()]
+    header_re = re.compile(r"^(experience|work experience|professional experience|employment history|work history)\b", re.IGNORECASE)
+    for idx, line in enumerate(lines):
+        if header_re.search(line.strip()):
+            continue  # skip section headers
+        # Title via matcher
+        title_found = None
+        nlp = _get_nlp()
+        if nlp is not None and _TITLE_MATCHER is not None:
+            try:
+                d_line = nlp(line)  # process line for matching
+                titles = _phrase_matches(_TITLE_MATCHER, d_line)
+                if titles:
+                    title_found = titles[0]
+            except Exception:
+                pass
+        # Org via spaCy ORG in the same/next line
+        org_found = None
+        loc_found = None
+        start, end = None, None
+        snippet = line
+        date_m = DATE_RANGE_RE.search(line)
+        if not date_m and idx+1 < len(lines):
+            # avoid consuming the next section header as a date context
+            nxt = lines[idx+1]
+            if not header_re.search(nxt.strip()):
+                date_m = DATE_RANGE_RE.search(nxt)
+        if date_m:
+            start, end = _split_date_range(date_m.group(0))
+        if doc is not None:
+            dl = doc.char_span(text.find(line), text.find(line) + len(line))
+            if dl is not None:
+                for ent in dl.ents:
+                    if ent.label_ == "ORG" and not org_found:
+                        org_found = ent.text
+                    if ent.label_ in ("GPE", "LOC") and not loc_found:
+                        loc_found = ent.text
+        # Require at least a title or a company to minimize noise
+        if title_found or org_found:
+            out.append({
+                "title": title_found,
+                "company": org_found,
+                "location": loc_found,
+                "start": start,
+                "end": end,
+                "snippet": _norm_ws(snippet)[:300],
+            })
+    # Deduplicate similar entries
+    return dedupe_dict_list(out)
+
+
+def dedupe_dict_list(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    seen = set()
+    out = []
+    for it in items:
+        key = tuple((k, (v.lower() if isinstance(v, str) else v)) for k, v in sorted(it.items()))
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(it)
+    return out
+
+
+def extract_resume_entities(text: str) -> Dict[str, Any]:
+    text = text or ""
+    nlp = _get_nlp()
+    doc = nlp(text) if nlp is not None and text else None
+    sections = _collect_sections(text)
+
+    email = _extract_email(text)
+    phone = _extract_phone(text)
+    linkedin = _extract_linkedin(text)
+    # First pass name via rules/spaCy
+    name = _extract_name(doc, text)
+    # Optional LLM-assisted name disambiguation (top-of-resume few lines)
+    try:
+        from app.core import config as _cfg
+        if not name and getattr(_cfg, 'USE_LLM_NAME', False):
+            snippet = "\n".join((text or "").splitlines()[:15])
+            from app.services.generation import generate
+            prompt = (
+                "Extract the candidate's full name (only the name) from the following resume snippet. "
+                "If ambiguous or missing, return an empty string.\n\nSnippet:\n" + snippet +
+                "\n\nName:"
+            )
+            ans = generate(prompt, [])
+            ans = (ans or "").strip().splitlines()[0].strip()
+            if ans and not _looks_like_bad_name(ans):
+                name = ans
+    except Exception:
+        pass
+
+    skills = _extract_skills(doc, text, sections)
+    # Normalize skills using dynamic mapping; optionally enrich with LLM
+    try:
+        from app.services.skills_dict import map_to_canonical, ensure_aliases_for
+        canon, mapping = map_to_canonical(skills)
+        skills = canon
+        try:
+            added = ensure_aliases_for(list(mapping.keys()))
+            if added:
+                skills, _ = map_to_canonical(skills)
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+    # Entities for locations/orgs/titles/dates
+    locations: List[str] = []
+    organizations: List[str] = []
+    titles: List[str] = []
+    if doc is not None:
+        for ent in doc.ents:
+            if ent.label_ in ("GPE", "LOC"):
+                locations.append(ent.text)
+            elif ent.label_ == "ORG":
+                organizations.append(ent.text)
+        titles.extend(_phrase_matches(_TITLE_MATCHER, doc))
+    dates = [m.group(0) for m in DATE_RANGE_RE.finditer(text)]
+
+    education = _extract_education(doc, text)
+    experience = _extract_experience(doc, text)
+
+    # Post-filter organizations/locations against skills and stopwords
+    skills_lower = {s.lower() for s in skills}
+    def _clean_list(items: List[str], stop: set[str]) -> List[str]:
+        cleaned = []
+        seen = set()
+        for it in items:
+            t = _norm_ws(it).strip(",;:")
+            tl = t.lower()
+            if not t:
+                continue
+            if tl in skills_lower:
+                continue
+            if any(tl == k or tl in k or k in tl for k in (k.lower() for k in SKILLS_DB)):
+                continue
+            if tl in stop:
+                continue
+            if t.lower() in seen:
+                continue
+            seen.add(t.lower())
+            cleaned.append(t)
+        return cleaned
+
+    organizations = _clean_list(organizations, ORG_STOPWORDS)
+    locations = _clean_list(locations, LOC_STOPWORDS)
+
+    # Optional Stage 2: AI-assisted enrichment for unrecognized text snippets
+    try:
+        from app.core import config as _cfg
+        if getattr(_cfg, 'USE_LLM_NER_ENRICH', False):
+            # Collect candidate snippets not already recognized
+            def _norm(s: str) -> str:
+                return _norm_ws(s).strip(',;:')
+
+            known = set([s.lower() for s in skills]) | set([t.lower() for t in titles]) | set([o.lower() for o in organizations]) | set([l.lower() for l in locations])
+            for e in education:
+                for k in ("degree", "field", "institution"):
+                    v = e.get(k)
+                    if v:
+                        known.add(str(v).lower())
+
+            # heuristically pick phrases separated by commas/pipes/bullets/newlines
+            chunks: List[str] = []
+            for raw in re.split(r"[\n\r\t\|,•\u2022]+", text):
+                s = _norm(raw)
+                if not s or len(s) < 2 or len(s) > 80:
+                    continue
+                sl = s.lower()
+                if sl in known:
+                    continue
+                if EMAIL_RE.search(s) or LINKEDIN_RE.search(s) or ALT_PHONE_RE.search(s):
+                    continue
+                # avoid obvious headers
+                if sl in {"summary","skills","experience","education","projects","certifications","objective","profile"}:
+                    continue
+                # skip lines that are mostly punctuation or numeric
+                if not re.search(r"[A-Za-z]", s):
+                    continue
+                # lightly favor capitalized phrases or multi-word tokens
+                tokens = [t for t in re.split(r"[^A-Za-z0-9+#.&/-]+", s) if t]
+                if len(tokens) == 1 and not tokens[0][0].isupper():
+                    continue
+                chunks.append(s)
+
+            if chunks:
+                from app.services.ner_ai_enrich import classify_snippets
+                ai_labels = classify_snippets(chunks)
+                if ai_labels:
+                    new_skills: List[str] = []
+                    new_titles: List[str] = []
+                    new_orgs: List[str] = []
+                    new_locs: List[str] = []
+                    edu_extra_deg: List[str] = []
+                    edu_extra_field: List[str] = []
+                    for s, lab in ai_labels.items():
+                        if lab == 'SKILL':
+                            new_skills.append(s)
+                        elif lab == 'TITLE':
+                            new_titles.append(s)
+                        elif lab == 'ORG':
+                            new_orgs.append(s)
+                        elif lab == 'GPE':
+                            new_locs.append(s)
+                        elif lab == 'EDU_DEGREE':
+                            edu_extra_deg.append(s)
+                        elif lab == 'EDU_FIELD':
+                            edu_extra_field.append(s)
+
+                    # Merge deduped
+                    def _merge_unique(dst: List[str], src: List[str]) -> List[str]:
+                        seen = {d.lower() for d in dst}
+                        for it in src:
+                            t = _norm(it)
+                            if not t:
+                                continue
+                            if t.lower() in seen:
+                                continue
+                            seen.add(t.lower())
+                            dst.append(t)
+                        return dst
+
+                    if new_skills:
+                        try:
+                            from app.services.skills_dict import map_to_canonical
+                            merged = _merge_unique(list(skills), new_skills)
+                            canon, _ = map_to_canonical(merged)
+                            skills = canon
+                        except Exception:
+                            skills = sorted(set(skills) | { _norm(s) for s in new_skills })
+                    if new_titles:
+                        titles = sorted(set(_merge_unique(list(titles), new_titles)))
+                    if new_orgs:
+                        organizations = sorted(set(_merge_unique(list(organizations), new_orgs)))
+                    if new_locs:
+                        locations = sorted(set(_merge_unique(list(locations), new_locs)))
+                    if edu_extra_deg or edu_extra_field:
+                        # Merge into last education item if fields are missing; else append minimal items
+                        if not education:
+                            education = []
+                        if education:
+                            last = education[-1]
+                            if edu_extra_deg and not last.get('degree'):
+                                last['degree'] = _norm(edu_extra_deg[0])
+                            if edu_extra_field and not last.get('field'):
+                                last['field'] = _norm(edu_extra_field[0])
+                        # Append remaining if still any
+                        for d in edu_extra_deg[1:] if education and education[-1].get('degree') else edu_extra_deg:
+                            education.append({"degree": _norm(d), "field": None, "institution": None, "start": None, "end": None})
+                        for f in edu_extra_field[1:] if education and education[-1].get('field') else edu_extra_field:
+                            education.append({"degree": None, "field": _norm(f), "institution": None, "start": None, "end": None})
+    except Exception:
+        # swallow enrichment errors silently
+        pass
+
+    return {
+        "name": name,
+        "email": email,
+        "phone": phone,
+        "linkedin": linkedin,
+        "skills": skills,
+        "locations": sorted(list({_norm_ws(x) for x in locations})),
+        "organizations": sorted(list({_norm_ws(x) for x in organizations})),
+        "titles": sorted(list({_norm_ws(x) for x in titles})),
+        "dates": sorted(list({d for d in dates})),
+        "education": education,
+        "experience": experience,
+        "raw_text": text,
+    }

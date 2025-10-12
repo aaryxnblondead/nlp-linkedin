@@ -1,0 +1,210 @@
+2025-09-29 14:26:51,800 - sereena_parser.main - ERROR - spaCy model not found. Install with: python -m spacy download en_core_web_sm
+2025-10-09 17:35:37,843 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:35:37,844 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:35:38,206 - sereena_parser.main - INFO - Successfully parsed Abiral_Pandey_Fullstack_Java.docx in 0.36s
+2025-10-09 17:35:42,958 - huggingface_hub.file_download - WARNING - Xet Storage is enabled for this repo, but the 'hf_xet' package is not installed. Falling back to regular HTTP download. For better performance, install the package with: `pip install huggingface_hub[hf_xet]` or `pip install hf_xet`
+2025-10-09 17:43:19,184 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:19,186 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:19,444 - sereena_parser.main - INFO - Successfully parsed aamir resume latest.docx in 0.26s
+2025-10-09 17:43:25,099 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:25,099 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:25,321 - sereena_parser.main - INFO - Successfully parsed Abdul Rahman.Khan_CV.pdf in 0.22s
+2025-10-09 17:43:27,144 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:27,144 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:28,851 - sereena_parser.main - INFO - Successfully parsed Aditya Arya_CV.pdf in 1.71s
+2025-10-09 17:43:30,619 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:30,620 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:31,288 - sereena_parser.main - INFO - Successfully parsed Anne Mariya_CV.pdf in 0.67s
+2025-10-09 17:43:33,780 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:33,780 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:33,919 - sereena_parser.main - INFO - Successfully parsed Haidar Mujawar-CV.docx in 0.14s
+2025-10-09 17:43:35,691 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:35,691 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:35,694 - sereena_parser.main - ERROR - Error extracting DOCX C:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:43:35,694 - sereena_parser.main - ERROR - Error parsing C:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:43:44,222 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:44,222 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:44,665 - sereena_parser.main - INFO - Successfully parsed Mahesh_SAS_Resume.pdf in 0.44s
+2025-10-09 17:43:46,699 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:46,699 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:46,701 - sereena_parser.main - ERROR - Error extracting DOCX C:\Users\myind\Downloads\nlp linkedin\real resumes\Nikhil Kadam_CV.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Nikhil Kadam_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:43:46,701 - sereena_parser.main - ERROR - Error parsing C:\Users\myind\Downloads\nlp linkedin\real resumes\Nikhil Kadam_CV.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Nikhil Kadam_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:43:53,368 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:53,368 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:53,510 - sereena_parser.main - INFO - Successfully parsed Pandurang_CV.docx in 0.14s
+2025-10-09 17:43:55,373 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:55,373 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:55,489 - sereena_parser.main - INFO - Successfully parsed Priyanka Bhange_CV.docx in 0.12s
+2025-10-09 17:43:57,630 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:43:57,630 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:43:58,213 - sereena_parser.main - INFO - Successfully parsed Resume DXC JayantKadam.docx in 0.58s
+2025-10-09 17:44:00,686 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:00,686 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:00,928 - sereena_parser.main - INFO - Successfully parsed Resume-Nilesh Bhole.pdf in 0.24s
+2025-10-09 17:44:03,117 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:03,118 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:03,309 - sereena_parser.main - INFO - Successfully parsed Resume-Ravindra.docx in 0.19s
+2025-10-09 17:44:05,306 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:05,307 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:05,309 - sereena_parser.main - ERROR - Error extracting DOCX C:\Users\myind\Downloads\nlp linkedin\real resumes\Resume_Arunkumar_Borreddi.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Resume_Arunkumar_Borreddi.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:44:05,309 - sereena_parser.main - ERROR - Error parsing C:\Users\myind\Downloads\nlp linkedin\real resumes\Resume_Arunkumar_Borreddi.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Resume_Arunkumar_Borreddi.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:44:12,093 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:12,093 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:12,261 - sereena_parser.main - INFO - Successfully parsed Rizwan Shaikh_CV.docx in 0.17s
+2025-10-09 17:44:14,655 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:14,655 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:14,741 - sereena_parser.main - INFO - Successfully parsed SaikatCV.docx in 0.09s
+2025-10-09 17:44:16,823 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:16,823 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:16,826 - sereena_parser.main - ERROR - Error extracting DOCX C:\Users\myind\Downloads\nlp linkedin\real resumes\Sameer Torne_CV.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Sameer Torne_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:44:16,826 - sereena_parser.main - ERROR - Error parsing C:\Users\myind\Downloads\nlp linkedin\real resumes\Sameer Torne_CV.doc: file 'C:\Users\myind\Downloads\nlp linkedin\real resumes\Sameer Torne_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 17:44:25,987 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:25,988 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:26,473 - sereena_parser.main - INFO - Successfully parsed Shahre_alam_Khan_Resume_Oct2020.docx in 0.49s
+2025-10-09 17:44:28,734 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:28,734 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:29,002 - sereena_parser.main - INFO - Successfully parsed siddhesh resume.sas1.docx in 0.27s
+2025-10-09 17:44:31,439 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:31,440 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:31,544 - sereena_parser.main - INFO - Successfully parsed Sreenivasula_CV.docx in 0.10s
+2025-10-09 17:44:33,485 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:33,486 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:33,639 - sereena_parser.main - INFO - Successfully parsed Sultan Shaikh_CV.docx in 0.15s
+2025-10-09 17:44:36,033 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:36,035 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:36,192 - sereena_parser.main - INFO - Successfully parsed Sunil Khule_CV.docx in 0.16s
+2025-10-09 17:44:38,143 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:38,143 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:38,313 - sereena_parser.main - INFO - Successfully parsed Sunny Bauva_CV.docx in 0.17s
+2025-10-09 17:44:40,362 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:40,362 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:40,504 - sereena_parser.main - INFO - Successfully parsed Sushma Singh_Resume.pdf in 0.14s
+2025-10-09 17:44:41,973 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:41,973 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:42,545 - sereena_parser.main - INFO - Successfully parsed Tushar Ugale_CV.pdf in 0.57s
+2025-10-09 17:44:44,886 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:44,887 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:45,386 - sereena_parser.main - INFO - Successfully parsed UmeshSingh_Resume.pdf in 0.50s
+2025-10-09 17:44:47,692 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:47,692 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:47,793 - sereena_parser.main - INFO - Successfully parsed vijaykumar Resume.docx in 0.10s
+2025-10-09 17:44:49,744 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:49,745 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:50,023 - sereena_parser.main - INFO - Successfully parsed Vikas D. Sonawane (1).docx in 0.28s
+2025-10-09 17:44:52,262 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:44:52,262 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:44:52,492 - sereena_parser.main - INFO - Successfully parsed Yogesh_Wankhede_resume -Final.docx in 0.23s
+2025-10-09 18:33:50,700 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 18:33:50,703 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 18:33:51,201 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.50s
+2025-10-09 20:36:21,901 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:36:21,903 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:36:22,202 - sereena_parser.main - INFO - Successfully parsed aamir resume latest.docx in 0.30s
+2025-10-09 20:36:41,059 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 20:36:50,131 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 20:36:59,833 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 20:37:02,253 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:37:04,028 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:37:04,031 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:37:05,492 - sereena_parser.main - INFO - Successfully parsed Abdul Rahman.Khan_CV.pdf in 1.46s
+2025-10-09 20:40:29,100 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:40:29,102 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:40:30,947 - sereena_parser.main - INFO - Successfully parsed Aditya Arya_CV.pdf in 1.85s
+2025-10-09 20:40:42,578 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 20:40:45,077 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:40:47,787 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:40:50,290 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:40:51,648 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:40:51,650 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:40:52,105 - sereena_parser.main - INFO - Successfully parsed Anne Mariya_CV.pdf in 0.45s
+2025-10-09 20:40:54,767 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:40:58,692 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:41:04,952 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:41:04,952 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:41:05,106 - sereena_parser.main - INFO - Successfully parsed Haidar Mujawar-CV.docx in 0.15s
+2025-10-09 20:41:17,128 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:41:17,129 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:41:17,132 - sereena_parser.main - ERROR - Error extracting DOCX ..\real resumes\Lakshmi Narayana_CV.doc: file '..\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 20:41:17,132 - sereena_parser.main - ERROR - Error parsing ..\real resumes\Lakshmi Narayana_CV.doc: file '..\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 21:47:34,135 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:47:34,137 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:47:34,428 - sereena_parser.main - INFO - Successfully parsed aamir resume latest.docx in 0.29s
+2025-10-09 21:47:43,440 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:47:43,442 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:47:43,666 - sereena_parser.main - INFO - Successfully parsed Abdul Rahman.Khan_CV.pdf in 0.22s
+2025-10-09 21:47:47,578 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:47:47,579 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:47:49,373 - sereena_parser.main - INFO - Successfully parsed Aditya Arya_CV.pdf in 1.79s
+2025-10-09 21:47:52,520 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:47:52,521 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:47:52,955 - sereena_parser.main - INFO - Successfully parsed Anne Mariya_CV.pdf in 0.43s
+2025-10-09 21:47:56,473 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:47:56,474 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:47:56,678 - sereena_parser.main - INFO - Successfully parsed Haidar Mujawar-CV.docx in 0.20s
+2025-10-09 21:48:00,261 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:48:00,261 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:48:00,263 - sereena_parser.main - ERROR - Error extracting DOCX c:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc: file 'c:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 21:48:00,263 - sereena_parser.main - ERROR - Error parsing c:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc: file 'c:\Users\myind\Downloads\nlp linkedin\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-09 21:51:10,678 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:51:10,679 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:51:10,890 - sereena_parser.main - INFO - Successfully parsed aamir resume latest.docx in 0.21s
+2025-10-09 21:51:22,851 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 21:51:23,664 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:51:23,665 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:51:23,965 - sereena_parser.main - INFO - Successfully parsed Abdul Rahman.Khan_CV.pdf in 0.30s
+2025-10-09 21:51:26,371 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 21:51:27,762 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:51:27,763 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:51:29,768 - sereena_parser.main - INFO - Successfully parsed Aditya Arya_CV.pdf in 2.01s
+2025-10-09 21:51:39,566 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 21:51:40,046 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:51:40,046 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:51:40,589 - sereena_parser.main - INFO - Successfully parsed Anne Mariya_CV.pdf in 0.54s
+2025-10-09 21:51:51,152 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 21:51:51,689 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:51:51,690 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:51:51,915 - sereena_parser.main - INFO - Successfully parsed Haidar Mujawar-CV.docx in 0.23s
+2025-10-09 21:52:03,453 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:52:03,455 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:52:04,767 - sereena_parser.main - INFO - Successfully parsed 10554236.pdf in 1.31s
+2025-10-09 21:52:22,932 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:52:22,942 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:52:23,969 - sereena_parser.main - INFO - Successfully parsed 10674770.pdf in 1.03s
+2025-10-09 21:52:27,023 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 21:52:28,943 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:52:28,943 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:52:29,605 - sereena_parser.main - INFO - Successfully parsed 11163645.pdf in 0.66s
+2025-10-09 21:52:33,162 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 21:52:34,336 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:52:34,337 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:52:35,303 - sereena_parser.main - INFO - Successfully parsed 11759079.pdf in 0.97s
+2025-10-09 21:52:39,457 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 21:52:40,588 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:52:40,589 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:52:41,215 - sereena_parser.main - INFO - Successfully parsed 12065211.pdf in 0.63s
+2025-10-09 21:52:45,438 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:52:45,438 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:52:46,282 - sereena_parser.main - INFO - Successfully parsed 12202337.pdf in 0.84s
+2025-10-09 21:52:50,192 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:52:50,192 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:52:50,761 - sereena_parser.main - INFO - Successfully parsed 12338274.pdf in 0.57s

@@ -1,0 +1,101 @@
+version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: qualifyai
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        - SPACY_MODEL=en_core_web_sm
+    environment:
+      PYTHONPATH: /app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: qualifyai
+      POSTGRES_SERVER: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+      SPACY_MODEL: en_core_web_sm
+      # RAG/LLM configuration
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      # Set true to avoid depending on Google for local runs. Uses local HF embeddings.
+      USE_OFFLINE_EMBEDDINGS: ${USE_OFFLINE_EMBEDDINGS:-true}
+      # Keep chatbot grounded to data by default
+      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY:-true}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - uploads:/app/uploaded_resumes
+      - chromadb:/app/chroma_db
+
+  celery:
+    build:
+      context: ./backend
+      args:
+        - SPACY_MODEL=en_core_web_sm
+    command: celery -A app.worker.celery_app.celery_app worker --loglevel=info
+    environment:
+      PYTHONPATH: /app
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 12345678
+      POSTGRES_DB: qualifyai
+      POSTGRES_SERVER: postgres
+      POSTGRES_PORT: 5432
+      REDIS_URL: redis://redis:6379/0
+      SPACY_MODEL: en_core_web_sm
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      USE_OFFLINE_EMBEDDINGS: ${USE_OFFLINE_EMBEDDINGS:-true}
+      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY:-true}
+    depends_on:
+      backend:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    volumes:
+      - uploads:/app/uploaded_resumes
+      - chromadb:/app/chroma_db
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_API_URL=http://localhost:8000/api/v1
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  pgdata:
+  uploads:
+  chromadb:

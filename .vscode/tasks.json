@@ -1,0 +1,21 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start backend with LLM env",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"Push-Location 'c:\\Users\\myind\\Downloads\\nlp linkedin'; $env:USE_LLM_NAME='true'; $env:USE_LLM_SKILLS_ENRICH='true'; $env:USE_LLM_SCORING='true'; if (Test-Path env:GOOGLE_API_KEY) { Write-Host 'Using Google API via GOOGLE_API_KEY' } else { Write-Host 'No GOOGLE_API_KEY set; will use transformers fallback' }; ./start_backend.ps1; Pop-Location"
+			],
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		}
+	]
+}

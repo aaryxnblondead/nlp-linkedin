@@ -1,0 +1,4 @@
+# Ignore local env and secrets
+.env
+*.env
+node_modules

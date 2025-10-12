@@ -1,0 +1,419 @@
+2025-10-09 14:58:07,687 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 14:58:07,688 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 14:58:08,421 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 0.73s
+2025-10-09 14:58:22,880 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 14:58:27,882 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 15:47:03,154 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 15:47:03,157 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 15:47:03,869 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 15:47:03,869 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 15:47:04,413 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 1.26s
+2025-10-09 15:47:04,437 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 0.57s
+2025-10-09 15:47:08,125 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 15:47:08,125 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 15:47:08,664 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 0.54s
+2025-10-09 15:47:17,051 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 15:47:17,052 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 15:47:20,244 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 15:47:21,278 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 15:47:21,278 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 16:02:53,164 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 16:02:53,166 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 16:02:53,738 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 0.57s
+2025-10-09 16:03:05,534 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 16:03:09,215 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 16:12:22,619 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 16:12:22,621 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 16:12:23,234 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 16:12:23,235 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 16:12:23,858 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 16:12:23,859 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 16:12:24,010 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 16:12:24,010 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 16:12:24,106 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 1.48s
+2025-10-09 16:12:24,438 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 1.20s
+2025-10-09 16:12:24,462 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 0.60s
+2025-10-09 16:12:24,469 - sereena_parser.main - INFO - Successfully parsed AARYAN_SINGH_RESUME.pdf in 0.46s
+2025-10-09 16:12:39,022 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 16:12:39,029 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 16:12:39,031 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 16:12:39,032 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 16:12:43,247 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 16:12:43,247 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 16:38:45,364 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 16:38:45,365 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 16:38:45,694 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.33s
+2025-10-09 16:38:57,818 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 16:39:02,102 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 16:45:14,841 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 16:45:14,843 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 16:45:15,132 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.29s
+2025-10-09 16:45:26,632 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 16:45:30,464 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 17:40:11,268 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 17:40:11,271 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 17:40:11,851 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.58s
+2025-10-09 17:40:15,553 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 17:40:18,924 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 18:19:33,730 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 18:19:33,732 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 18:19:34,090 - sereena_parser.main - INFO - Successfully parsed Abiral_Pandey_Fullstack_Java.docx in 0.36s
+2025-10-09 18:39:15,231 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 18:39:15,234 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 18:39:15,712 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.48s
+2025-10-09 18:39:20,578 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-09 18:39:23,875 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 19:30:25,431 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:30:25,433 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:30:25,863 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.43s
+2025-10-09 19:46:20,992 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:46:20,994 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:46:21,596 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.60s
+2025-10-09 19:46:26,750 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:46:29,828 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:46:33,805 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:46:36,673 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:46:37,587 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 19:46:52,798 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:46:52,799 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:46:53,232 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.43s
+2025-10-09 19:46:58,992 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:47:02,183 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:47:04,708 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:52:05,622 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:52:05,623 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:52:06,229 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.61s
+2025-10-09 19:52:17,070 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 19:52:26,392 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 19:52:35,086 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 19:52:37,922 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 19:52:39,736 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-09 19:58:38,844 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:58:38,845 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:58:39,460 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.61s
+2025-10-09 19:58:50,454 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 19:59:01,378 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:59:01,381 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:59:02,614 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 1.23s
+2025-10-09 19:59:03,030 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 19:59:12,706 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 19:59:16,691 - accelerate.utils.modeling - WARNING - The model weights are not tied. Please use the `tie_weights` method before using the `infer_auto_device` function.
+2025-10-09 19:59:50,197 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:59:50,198 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:59:50,959 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.76s
+2025-10-09 19:59:55,098 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:59:55,101 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:59:55,594 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 19:59:55,594 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 19:59:57,122 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 2.02s
+2025-10-09 19:59:57,160 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 1.56s
+2025-10-09 20:00:03,831 - accelerate.utils.modeling - WARNING - The model weights are not tied. Please use the `tie_weights` method before using the `infer_auto_device` function.
+2025-10-09 20:00:03,841 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 4718592000 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:00:04,407 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:00:10,928 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:00:13,156 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:00:13,158 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:00:13,779 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:00:14,059 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.90s
+2025-10-09 20:00:20,351 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:02:36,983 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:02:36,985 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:02:37,743 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.76s
+2025-10-09 20:02:46,938 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 20:02:49,801 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:02:52,837 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:02:56,935 - accelerate.utils.modeling - INFO - Based on the current allocation process, no modules could be assigned to the following devices due to insufficient memory:
+  - cpu: 2670759936 bytes required
+These minimum requirements are specific to this allocation attempt and may vary. Consider increasing the available memory for these devices to at least the specified minimum, or adjusting the model config.
+2025-10-09 20:02:57,172 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:02:57,173 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:02:57,655 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.48s
+2025-10-09 20:03:08,738 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-09 20:03:15,659 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 20:03:15,660 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 20:03:15,941 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.28s
+2025-10-09 21:39:58,595 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-09 21:39:58,597 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-09 21:39:59,305 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.71s
+2025-10-09 21:40:08,921 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 21:40:19,733 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 21:40:30,441 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 21:40:40,683 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-09 21:40:42,006 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-11 18:09:35,065 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-11 18:09:35,067 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-11 18:09:35,663 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.60s
+2025-10-11 18:09:44,664 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-11 18:09:54,915 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-11 18:10:05,653 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-11 18:10:14,322 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the disk and cpu.
+2025-10-11 18:10:16,055 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-11 18:22:18,583 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-11 18:22:18,584 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-11 18:22:19,262 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.68s
+2025-10-11 18:22:27,761 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:22:38,029 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:22:47,580 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:22:57,348 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:22:59,681 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-11 18:40:01,445 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-11 18:40:01,447 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-11 18:40:02,291 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.84s
+2025-10-11 18:40:22,637 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:40:32,268 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:40:41,828 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:40:51,147 - accelerate.big_modeling - WARNING - Some parameters are on the meta device because they were offloaded to the cpu and disk.
+2025-10-11 18:40:52,449 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-11 21:10:39,088 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-11 21:10:39,090 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-11 21:10:40,298 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 1.21s
+2025-10-11 21:10:42,849 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 11:26:15,243 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 11:26:15,245 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 11:26:16,165 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.92s
+2025-10-12 11:26:19,610 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 11:33:44,084 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 11:33:44,086 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 11:33:44,697 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.61s
+2025-10-12 11:33:46,508 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 12:18:11,250 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 12:18:11,252 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 12:18:12,055 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.80s
+2025-10-12 12:18:14,259 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 12:24:27,585 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 12:24:27,586 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 12:24:28,281 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.70s
+2025-10-12 12:24:30,477 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 12:37:53,574 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 12:37:53,575 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 12:37:54,348 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.77s
+2025-10-12 12:37:56,331 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 12:40:25,354 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 12:40:25,356 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 12:40:26,045 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.69s
+2025-10-12 12:40:28,001 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 12:46:05,363 - backoff - INFO - Backing off send_request(...) for 0.1s (requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionResetError(10054, 'An existing connection was forcibly closed by the remote host', None, 10054, None)))
+2025-10-12 13:44:18,348 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 13:44:18,350 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 13:44:18,864 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.51s
+2025-10-12 15:10:18,827 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 15:10:18,829 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 15:10:19,174 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.34s
+2025-10-12 15:10:50,745 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 15:10:50,745 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 15:10:51,017 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.27s
+2025-10-12 15:13:45,181 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 15:13:45,182 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 15:13:45,659 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.48s
+2025-10-12 15:20:45,701 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 15:20:45,703 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 15:20:46,158 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.46s
+2025-10-12 15:35:09,258 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 15:35:09,260 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 15:35:09,631 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.37s
+2025-10-12 15:35:13,019 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 15:35:13,020 - app.services.generation - INFO - Using Google Gemini model: gemini-1.5-flash
+2025-10-12 15:35:13,295 - app.services.generation - ERROR - Google Gemini generation failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 170, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 15:35:13,301 - app.services.generation - ERROR - Core generation failed for provider 'google'. Error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 257, in generate
+    return _generate_google(question, contexts, max_new_tokens)
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 170, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 15:35:13,600 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 15:35:13,600 - app.services.generation - INFO - Using Google Gemini model: gemini-1.5-flash
+2025-10-12 15:35:13,769 - app.services.generation - ERROR - Google Gemini generation failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 170, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 15:35:13,771 - app.services.generation - ERROR - Core generation failed for provider 'google'. Error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 257, in generate
+    return _generate_google(question, contexts, max_new_tokens)
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 170, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
