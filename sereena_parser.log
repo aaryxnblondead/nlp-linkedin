@@ -417,3 +417,6 @@ Traceback (most recent call last):
   File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
     raise exceptions.from_grpc_error(exc) from exc
 google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 16:05:30,519 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 16:05:30,521 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 16:05:31,050 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.53s
