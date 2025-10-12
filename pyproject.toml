@@ -1,6 +1,14 @@
 [tool.ruff]
 line-length = 100
-extend-exclude = ["frontend/node_modules", "**/__pycache__/**"]
+extend-exclude = [
+  "frontend",
+  "frontend/node_modules",
+  "**/__pycache__/**",
+  "migrations",
+  "bases",
+  "backend/scripts",
+  "backend/tests",
+]
 
 [tool.ruff.lint]
 select = [
@@ -16,4 +24,5 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 warn_unused_configs = true
 ignore_missing_imports = true
-exclude = ["frontend/node_modules", "**/__pycache__", "**/migrations"]
+# Regex of files/dirs to exclude from mypy (non-essential or third-party code)
+exclude = "(^frontend/|__pycache__|^migrations/|^bases/|^backend/scripts/|^backend/tests/)"

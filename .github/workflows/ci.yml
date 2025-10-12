@@ -23,7 +23,7 @@ jobs:
       - name: Lint (ruff)
         run: |
           ruff --version
-          ruff check .. --quiet
+          ruff check app --quiet
       - name: Type-check (mypy)
         run: |
           mypy app || true

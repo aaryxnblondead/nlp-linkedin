@@ -13,4 +13,8 @@ spacy
 PyMuPDF
 python-docx
 google-generativeai
+langchain
+langchain-community
+chromadb
+sentence-transformers
 
