@@ -148,12 +148,19 @@ def estimate_experience_years(structured_resume: Dict[str, Any]) -> int:
             if months > 0:
                 total_months += months
         return max(0, min(40, round(total_months / 12)))
-    # Fallback: parse from raw text patterns like "X years"
+    # Fallbacks: parse explicit patterns like '8+ years of experience' or generic 'X years'
     text = structured_resume.get("raw_text") or ""
-    m = re.search(r"(\d{1,2})\s+years", text.lower())
-    if m:
+    tl = text.lower()
+    m1 = re.search(r"(\d{1,2})\s*\+?\s*years?\s+of\s+experience", tl)
+    if m1:
         try:
-            return max(0, min(40, int(m.group(1))))
+            return max(0, min(45, int(m1.group(1))))
+        except Exception:
+            pass
+    m2 = re.search(r"(\d{1,2})\s+years", tl)
+    if m2:
+        try:
+            return max(0, min(45, int(m2.group(1))))
         except Exception:
             pass
     jobs = re.findall(r"\b(\d{4})\b", text)
@@ -176,7 +183,7 @@ def _project_quality_from_resume(text: str) -> float:
     """Heuristic score 0..1 based on action verbs and quantified outcomes in resume text."""
     t = (text or "").lower()
     verbs = ["built","led","designed","implemented","optimized","deployed","architected","migrated","automated"]
-    outcomes = ["%","percent","x","times","reduced","increased","decreased","improved","latency","throughput","cost","reliability"]
+    outcomes = ["%","percent","x","times","reduced","increased","decreased","improved","latency","throughput","cost","reliability","delivered","launched","shipped"]
     v_hits = sum(t.count(v) for v in verbs)
     o_hits = sum(t.count(w) for w in outcomes)
     # normalize: cap at reasonable counts
@@ -254,6 +261,17 @@ def _seniority_score(titles: List[str]) -> float:
         score = 0.2
     return score
 
+def _seniority_label(score: float) -> str:
+    if score >= 0.9:
+        return "Principal/Staff"
+    if score >= 0.7:
+        return "Senior/Lead"
+    if score >= 0.45:
+        return "Mid"
+    if score > 0:
+        return "Junior"
+    return "Unknown"
+
 def _education_score(education: List[Dict[str, Any]]) -> float:
     if not education:
         return 0.0
@@ -321,16 +339,24 @@ def generate_candidate_insights(structured_resume: Dict[str, Any], role: str | N
         metrics_avg = sum(metrics_scores) / len(metrics_scores)
     else:
         metrics_avg = 0.0
-    endorsements_projects_score = max(0.0, min(1.0, 0.5 * pq_text + 0.3 * metrics_avg + 0.2 * confidence_tone))
+    # Boost overall activity based on number of project bullets found
+    try:
+        project_activity = min(1.0, len(projects) / 12.0)
+        activity = max(activity, 0.6 * activity + 0.4 * project_activity)
+    except Exception:
+        pass
+    # Heavier emphasis on concrete project signals
+    endorsements_projects_score = max(0.0, min(1.0, 0.6 * pq_text + 0.3 * metrics_avg + 0.1 * confidence_tone))
 
+    # Reweight to prioritize experience and projects; reduce sentiment influence
     base_weights = {
-        "experience": 0.30,
-        "seniority": 0.15,
-        "skills": 0.25,
-        "education": 0.10,
-        "activity": 0.08,
-        "sentiment": 0.12,
-        "eproj": 0.12,
+        "experience": 0.38,
+        "seniority": 0.16,
+        "skills": 0.20,
+        "education": 0.07,
+        "activity": 0.09,
+        "sentiment": 0.05,
+        "eproj": 0.25,
         "consistency": 0.00,
     }
     role_weights = base_weights.copy()
@@ -359,8 +385,8 @@ def generate_candidate_insights(structured_resume: Dict[str, Any], role: str | N
         weighted_sum = max(weighted_sum, base_sum - 0.05)
 
     resilience_bonus = 0.0
-    if skills_score >= 0.7 and (experience_score >= 0.6 or seniority_score >= 0.7):
-        resilience_bonus = 0.08
+    if (skills_score >= 0.65 and endorsements_projects_score >= 0.5) and (experience_score >= 0.6 or seniority_score >= 0.7):
+        resilience_bonus = 0.10
 
     overall = max(0.0, weighted_sum - penalty * role_weights["consistency"]) + resilience_bonus
     overall = max(0.0, min(1.0, overall)) * 100.0
@@ -380,7 +406,7 @@ def generate_candidate_insights(structured_resume: Dict[str, Any], role: str | N
     summary_bullets = [
         f"Skills ({breadth}/{depth}): {', '.join(skills[:10])}",
         f"Experience: {experience_years} years (non-overlapping, internships excluded)",
-        f"Seniority: {rating_label}",
+        f"Seniority: {_seniority_label(seniority_score)}",
         f"Education score: {education_score:.2f}",
         f"Resume sentiment: {sentiment:.2f}",
         f"Project quality (resume): {endorsements_projects_score:.2f}",

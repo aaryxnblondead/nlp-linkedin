@@ -27,6 +27,7 @@ except ImportError:
 # --- Globals ---
 _HF_TOKENIZER = None
 _HF_MODEL = None
+_GOOGLE_MODEL_ID: Optional[str] = None
 
 
 # --- Prompt Engineering ---
@@ -54,6 +55,54 @@ def _extract_google_text(resp) -> str:
             return ""
 
 
+def _select_google_model_id() -> str:
+    """Pick a supported Gemini model, preferring newer Flash variants.
+
+    Order of preference if env GEMINI_MODEL_ID is not set:
+    - gemini-2.0-flash
+    - gemini-2.0-flash-lite
+    - gemini-1.5-flash-8b
+    - gemini-1.5-flash
+
+    We attempt to call list_models() and choose the first available that supports
+    'generateContent'. If the API call fails, we fall back to the first candidate.
+    """
+    # 1) Respect explicit override
+    env_id = os.getenv("GEMINI_MODEL_ID") or os.getenv("GENERATOR_MODEL_ID")
+    if env_id and env_id.strip():
+        return env_id.strip()
+
+    # 2) Preferred candidates
+    preferred = [
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-1.5-flash-8b",
+        "gemini-1.5-flash",
+    ]
+
+    try:
+        models = list(genai.list_models()) if genai is not None else []
+        # Build a lookup of supported methods
+        supported = {}
+        for m in models:
+            mid = getattr(m, "name", None) or getattr(m, "model", None) or getattr(m, "id", None)
+            # Normalize: some SDKs prefix with "models/"; strip it
+            if isinstance(mid, str) and mid.startswith("models/"):
+                mid = mid.split("/", 1)[1]
+            if isinstance(mid, str):
+                methods = set(getattr(m, "supported_generation_methods", []) or [])
+                supported[mid] = methods
+        for cand in preferred:
+            if cand in supported and ("generateContent" in supported[cand] or "generate_text" in supported[cand]):
+                return cand
+    except Exception:
+        # Listing models is best-effort; ignore failures
+        pass
+
+    # 3) Fallback to first candidate
+    return preferred[0]
+
+
 def _generate_google(question: str, contexts: List[str], max_new_tokens: int = 256) -> str:
     """Generates a response using Google's Generative AI."""
     if genai is None:
@@ -64,7 +113,10 @@ def _generate_google(question: str, contexts: List[str], max_new_tokens: int = 2
         raise RuntimeError("GOOGLE_API_KEY is not set in the environment.")
 
     genai.configure(api_key=api_key)
-    model_id = os.getenv("GEMINI_MODEL_ID", "gemini-1.5-flash")
+    global _GOOGLE_MODEL_ID
+    if not _GOOGLE_MODEL_ID:
+        _GOOGLE_MODEL_ID = _select_google_model_id()
+    model_id = _GOOGLE_MODEL_ID
     log.info("Using Google Gemini model: %s", model_id)
 
     model = genai.GenerativeModel(model_id)
@@ -84,6 +136,23 @@ def _generate_google(question: str, contexts: List[str], max_new_tokens: int = 2
         resp = model.generate_content(prompt, generation_config={"max_output_tokens": max_new_tokens})
         return _extract_google_text(resp)
     except Exception as e:
+        # If the chosen model fails due to 404/not supported, try a one-time fallback refresh
+        msg = str(e)
+        if "404" in msg or "not found" in msg.lower() or "not supported" in msg.lower():
+            try:
+                new_id = _select_google_model_id()
+                if new_id != model_id:
+                    log.warning("Gemini model '%s' failed; retrying with '%s'...", model_id, new_id)
+                    _GOOGLE_MODEL_ID = new_id
+                    model = genai.GenerativeModel(new_id)
+                    resp = model.generate_content(
+                        prompt,
+                        generation_config={"max_output_tokens": max_new_tokens},
+                        request_options={"timeout": 20},
+                    )
+                    return _extract_google_text(resp)
+            except Exception:
+                pass
         log.error("Google Gemini generation failed: %s", e, exc_info=True)
         raise
 

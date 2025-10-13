@@ -12,6 +12,7 @@ except Exception:
 	pass
 
 from app.api.v1.endpoints import applicants
+from app.api.v1.endpoints import chat
 from app.api.v1.endpoints import auth
 from app.core import config as _cfg
 from app.services.embeddings import get_embedder_backend, get_corpus_count, get_namespace_count
@@ -60,6 +61,7 @@ def health():
 
 app.include_router(applicants.router, prefix="/api/v1")
 app.include_router(auth.router, prefix="/api/v1")
+app.include_router(chat.router, prefix="/api/v1")
 
 # Optional: lightweight RAG diagnostics
 @app.get("/api/v1/rag/status")

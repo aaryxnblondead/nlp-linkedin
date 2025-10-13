@@ -35,8 +35,30 @@ export default function SummaryCell({ insights }) {
 
   // Try to extract a few skill hints from the summary string
   const skillsMatch = summaryText.match(/Skills\s*\((?:[^)]*)\):\s*([^|]+)/i);
-  const skillsRaw = skillsMatch ? skillsMatch[1].split(/,\s*/) : [];
-  const skillsList = Array.from(new Set(skillsRaw.map((s) => s.trim()).filter(Boolean)));
+  const skillsBlock = skillsMatch ? String(skillsMatch[1]) : '';
+  // Split by common delimiters first; if none found, fall back to whitespace tokenization
+  let skillsTokens = [];
+  if (skillsBlock) {
+    const normalized = skillsBlock.replace(/\s+/g, ' ').trim();
+    const hasDelims = /[;,|•·]/.test(normalized);
+    if (hasDelims) {
+      skillsTokens = normalized.split(/[;,|•·]/g);
+    } else if (normalized.includes(',')) {
+      skillsTokens = normalized.split(',');
+    } else {
+      // Fallback: split by spaces to avoid huddling multiple skills into one chip
+      skillsTokens = normalized.split(/\s+/g);
+    }
+  }
+  // Clean up tokens, drop trivial connectors, dedupe
+  const STOPWORDS = new Set(['and','or','with','for','of','the','to','in','on','at','a','an','&']);
+  const skillsList = Array.from(
+    new Set(
+      skillsTokens
+        .map((s) => s.trim())
+        .filter((s) => s && !STOPWORDS.has(s.toLowerCase()))
+    )
+  );
   const maxSkills = 4;
   const shownSkills = skillsList.slice(0, maxSkills);
   const moreCount = Math.max(0, skillsList.length - maxSkills);

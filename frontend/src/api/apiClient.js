@@ -52,3 +52,17 @@ export const loginUser = async (username, password) => {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
   });
 };
+
+// Chat: grounded Q&A over an applicant's KB
+export const chatApplicant = async (applicantId, messages, token, opts = {}) => {
+  const body = {
+    messages,
+    top_k: typeof opts.top_k === 'number' ? opts.top_k : 6,
+    max_new_tokens: typeof opts.max_new_tokens === 'number' ? opts.max_new_tokens : 256,
+  };
+  const base = API_BASE;
+  const url = applicantId ? `${base}/chat/${applicantId}` : `${base}/chat`;
+  return axios.post(url, body, {
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+  });
+};

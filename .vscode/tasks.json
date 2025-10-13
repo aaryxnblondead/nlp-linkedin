@@ -16,6 +16,74 @@
 				"$tsc"
 			],
 			"group": "build"
+		},
+		{
+			"label": "Ingest real resumes",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"Push-Location 'c:\\Users\\myind\\Downloads\\nlp linkedin'; $env:USE_LLM_NAME='true'; $env:USE_LLM_SKILLS_ENRICH='true'; $env:USE_LLM_SCORING='true'; if (Test-Path env:GOOGLE_API_KEY) { Write-Host 'Using Google API via GOOGLE_API_KEY' } else { Write-Host 'No GOOGLE_API_KEY set; will use transformers fallback' }; python -m backend.scripts.ingest_real_resumes -r 'real resumes' --skip-existing; Pop-Location"
+			],
+			"problemMatcher": [
+				"$eslint-stylish"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Check RAG status",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"Push-Location 'c:\\Users\\myind\\Downloads\\nlp linkedin'; $resp = Invoke-WebRequest -UseBasicParsing http://localhost:8000/api/v1/rag/status; Write-Host $resp.Content; Pop-Location"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Ingest real resumes (run)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"Push-Location 'c:\\Users\\myind\\Downloads\\nlp linkedin\\backend'; $env:PYTHONPATH='c:\\Users\\myind\\Downloads\\nlp linkedin\\backend'; if (Test-Path env:GOOGLE_API_KEY) { Write-Host \"Using Google API via GOOGLE_API_KEY\" } else { Write-Host \"No GOOGLE_API_KEY found in env. .env should be auto-loaded.\" }; python -m scripts.ingest_real_resumes --root \"..\\real resumes\" --skip-existing; Pop-Location"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Check RAG status (run)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"$resp = Invoke-WebRequest -UseBasicParsing http://localhost:8000/api/v1/rag/status; Write-Host $resp.Content"
+			],
+			"group": "build"
+		},
+		{
+			"label": "Smoke test NER on IIT",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"$env:PYTHONPATH='c:\\Users\\myind\\Downloads\\nlp linkedin\\backend'; python - <<'PY'\nimport sys, os\nfrom app.services.ner import extract_resume_entities\ntext = \"John Doe\\nEmail: john@example.com\\nEducation: B.Tech in CSE from IIT Delhi 2014-2018; BE Mechanical from University of Mumbai 2009-2013\"\nres = extract_resume_entities(text)\nprint(res.get('education'))\nPY"
+			],
+			"group": "build"
 		}
 	]
 }

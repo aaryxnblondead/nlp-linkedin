@@ -10,12 +10,25 @@ Usage (Windows cmd):
 import os
 import sys
 import argparse
+from typing import Optional
 
 CURRENT_DIR = os.path.dirname(__file__)
 BACKEND_DIR = os.path.abspath(os.path.join(CURRENT_DIR, os.pardir))
 PROJECT_ROOT = os.path.abspath(os.path.join(BACKEND_DIR, os.pardir))
 if BACKEND_DIR not in sys.path:
     sys.path.insert(0, BACKEND_DIR)
+
+# Load .env from project root so GOOGLE_API_KEY and flags are available in this script
+try:
+    from dotenv import load_dotenv, find_dotenv  # type: ignore
+    env_path: Optional[str] = find_dotenv(usecwd=True)
+    if env_path:
+        load_dotenv(env_path)
+    else:
+        # fallback: attempt project root
+        load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
+except Exception:
+    pass
 
 from app.db import SessionLocal
 from app.models.applicant import Applicant

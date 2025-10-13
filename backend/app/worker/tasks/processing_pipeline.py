@@ -4,6 +4,8 @@ from app.services.normalize import normalize_structured_resume
 from app.models.applicant import Applicant, Resume, LinkedInProfile, Insights
 from app.db import SessionLocal
 from app.worker.celery_app import celery_app
+from app.services.embeddings import chunk_texts, upsert_applicant_kb, add_corpus_texts
+from app.services.skills_dict import update_aliases, normalize_skill
 
 @celery_app.task
 def process_applicant_pipeline(applicant_id, resume_path, linkedin_url):
@@ -88,6 +90,119 @@ def process_applicant_pipeline(applicant_id, resume_path, linkedin_url):
         except Exception:
             pass
         db.commit()
+
+        # ----- RAG indexing: add applicant data (raw + NER/enriched structured + insights) into KB and global corpus -----
+        try:
+            combined_chunks = []
+            combined_metas = []
+
+            # 1) Raw resume text
+            if resume_text:
+                rc = chunk_texts([resume_text])
+                combined_chunks.extend(rc)
+                combined_metas.extend([
+                    {"source": getattr(app, 'resume_path', None), "applicant_id": applicant_id, "kind": "resume_raw"}
+                    for _ in rc
+                ])
+
+            # 2) Human-readable structured fields derived from NER and optional LLM enrichment
+            try:
+                structured_texts = []
+                if structured_resume:
+                    skills = structured_resume.get("skills") or []
+                    titles = structured_resume.get("titles") or []
+                    orgs = structured_resume.get("organizations") or []
+                    locs = structured_resume.get("locations") or []
+                    edu = structured_resume.get("education") or []
+                    exp = structured_resume.get("experience") or []
+
+                    if skills:
+                        structured_texts.append("Skills: " + ", ".join([str(s) for s in skills if s]))
+                    if titles:
+                        structured_texts.append("Titles: " + ", ".join([str(t) for t in titles if t]))
+                    if orgs:
+                        structured_texts.append("Organizations: " + ", ".join([str(o) for o in orgs if o]))
+                    if locs:
+                        structured_texts.append("Locations: " + ", ".join([str(l) for l in locs if l]))
+
+                    for e in edu[:30]:
+                        dl = []
+                        if e.get("degree"): dl.append(str(e.get("degree")))
+                        if e.get("field"): dl.append(str(e.get("field")))
+                        if e.get("institution"): dl.append(str(e.get("institution")))
+                        if dl:
+                            structured_texts.append("Education: " + " | ".join(dl))
+
+                    for x in exp[:80]:
+                        parts = []
+                        if x.get("title"): parts.append(str(x.get("title")))
+                        if x.get("company"): parts.append(str(x.get("company")))
+                        if x.get("location"): parts.append(str(x.get("location")))
+                        se = " - ".join([p for p in [str(x.get("start") or ""), str(x.get("end") or "")] if p])
+                        if se: parts.append(se)
+                        snippet = str(x.get("snippet") or "")
+                        line = "Experience: " + " | ".join(parts)
+                        if snippet:
+                            line += f" | {snippet}"
+                        structured_texts.append(line)
+
+                if structured_texts:
+                    sc = chunk_texts(structured_texts)
+                    combined_chunks.extend(sc)
+                    combined_metas.extend([
+                        {"source": getattr(app, 'resume_path', None), "applicant_id": applicant_id, "kind": "ner_structured"}
+                        for _ in sc
+                    ])
+            except Exception:
+                pass
+
+            # 3) Insights summary
+            try:
+                if insights and insights.get("summary"):
+                    ic = chunk_texts([str(insights.get("summary"))])
+                    combined_chunks.extend(ic)
+                    combined_metas.extend([
+                        {"source": getattr(app, 'resume_path', None), "applicant_id": applicant_id, "kind": "insights_summary"}
+                        for _ in ic
+                    ])
+            except Exception:
+                pass
+
+            if combined_chunks:
+                # Upsert into applicant-specific KB
+                namespace = upsert_applicant_kb(applicant_id, combined_chunks)
+                # Add to global corpus with per-chunk metadata
+                add_corpus_texts(combined_chunks, combined_metas)
+                # Persist namespace for the applicant insights row if available
+                try:
+                    rec = db.query(Insights).filter(Insights.applicant_id == applicant_id).first()
+                    if rec:
+                        db.query(Insights).filter(Insights.id == rec.id).update({Insights.kb_namespace: namespace})
+                        db.commit()
+                except Exception:
+                    db.rollback()
+        except Exception:
+            # Non-fatal if Chroma isn't available
+            pass
+
+        # ----- Dynamic skills dictionary enrichment from insights ----
+        try:
+            skills = []
+            if structured_resume and isinstance(structured_resume.get("skills"), list):
+                skills.extend([normalize_skill(str(s)) for s in structured_resume.get("skills") if s])
+            # From insights summary, extract rudimentary skill tokens (lowercase words that match known patterns)
+            summ = str(insights.get("summary") or "").lower()
+            tokens = [t.strip(",.;:()[]{}") for t in summ.split() if t and len(t) <= 30]
+            skills.extend([normalize_skill(t) for t in tokens if normalize_skill(t)])
+            # Build alias->canonical pairs as identity for unknown skills; actual alias expansion will run via ensure_aliases in normalize path
+            pairs = []
+            for s in set(skills):
+                if s:
+                    pairs.append((s, s))
+            if pairs:
+                update_aliases(pairs)
+        except Exception:
+            pass
         return True
     except Exception:
         try:

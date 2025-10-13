@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import ChatPanel from './ChatPanel';
 import { fetchAllApplicants } from './api/apiClient';
 import ScoreBreakdownRadar from './ScoreBreakdownRadar';
 import './index.css';
@@ -14,6 +15,8 @@ function RecruiterDashboard({ token }) {
   const [skills, setSkills] = useState('');
   const [expandedId, setExpandedId] = useState(null);
   const [sortBy, setSortBy] = useState('created');
+  const [chatOpen, setChatOpen] = useState(false);
+  // Single global chat only
 
   const loadApplicants = async () => {
     setLoading(true);
@@ -55,6 +58,7 @@ function RecruiterDashboard({ token }) {
   // removed Resync LinkedIn handler
 
   return (
+    <>
     <div>
       <div className="hero">
         <div>
@@ -62,12 +66,17 @@ function RecruiterDashboard({ token }) {
           <div className="hero-title">Talent overview</div>
           <div className="hero-copy">Search, filter, and review candidates from your aggregated resume corpus.</div>
         </div>
-        <select className="select" value={sortBy} onChange={(e)=>setSortBy(e.target.value)}>
+        <div style={{ display:'flex', gap:10, alignItems:'center' }}>
+          <button className="btn btn-secondary" onClick={()=>setChatOpen(v=>!v)}>
+            {chatOpen ? 'Hide Chat' : 'Open Chat'}
+          </button>
+          <select className="select" value={sortBy} onChange={(e)=>setSortBy(e.target.value)}>
           <option value="created">Sort: Created (default)</option>
           <option value="rating-desc">Sort: Rating (high→low)</option>
           <option value="experience-desc">Sort: Experience (high→low)</option>
           <option value="name-asc">Sort: Name (A→Z)</option>
-        </select>
+          </select>
+        </div>
       </div>
 
       <div className="toolbar">
@@ -141,6 +150,7 @@ function RecruiterDashboard({ token }) {
                       >
                         {expandedId === applicant.id ? 'Hide' : 'Show'}
                       </button>
+                      {/* Per-applicant Chat removed: single global chat is available from header */}
                       {/* Resync LinkedIn button removed per request */}
                     </td>
                   </tr>
@@ -186,6 +196,10 @@ function RecruiterDashboard({ token }) {
         )}
       </div>
     </div>
+    {chatOpen && (
+      <ChatPanel token={token} onClose={()=>setChatOpen(false)} />
+    )}
+    </>
   );
 }
 

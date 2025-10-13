@@ -208,3 +208,95 @@ These minimum requirements are specific to this allocation attempt and may vary.
 2025-10-09 21:52:50,192 - sereena_parser.main - INFO - Loaded spaCy model successfully
 2025-10-09 21:52:50,192 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
 2025-10-09 21:52:50,761 - sereena_parser.main - INFO - Successfully parsed 12338274.pdf in 0.57s
+2025-10-13 01:36:41,796 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:36:41,797 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:36:41,944 - sereena_parser.main - INFO - Successfully parsed aamir resume latest.docx in 0.15s
+2025-10-13 01:36:43,338 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-13 01:36:46,614 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:36:46,615 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:36:46,844 - sereena_parser.main - INFO - Successfully parsed Abdul Rahman.Khan_CV.pdf in 0.23s
+2025-10-13 01:36:50,417 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:36:50,418 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:36:52,390 - sereena_parser.main - INFO - Successfully parsed Aditya Arya_CV.pdf in 1.97s
+2025-10-13 01:36:55,219 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:36:55,220 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:36:55,907 - sereena_parser.main - INFO - Successfully parsed Anne Mariya_CV.pdf in 0.69s
+2025-10-13 01:36:59,605 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:36:59,605 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:36:59,752 - sereena_parser.main - INFO - Successfully parsed Haidar Mujawar-CV.docx in 0.15s
+2025-10-13 01:37:02,598 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:02,598 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:02,600 - sereena_parser.main - ERROR - Error extracting DOCX ..\real resumes\Lakshmi Narayana_CV.doc: file '..\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:02,600 - sereena_parser.main - ERROR - Error parsing ..\real resumes\Lakshmi Narayana_CV.doc: file '..\real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:06,006 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:06,007 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:06,415 - sereena_parser.main - INFO - Successfully parsed Mahesh_SAS_Resume.pdf in 0.41s
+2025-10-13 01:37:10,342 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:10,343 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:10,346 - sereena_parser.main - ERROR - Error extracting DOCX ..\real resumes\Nikhil Kadam_CV.doc: file '..\real resumes\Nikhil Kadam_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:10,346 - sereena_parser.main - ERROR - Error parsing ..\real resumes\Nikhil Kadam_CV.doc: file '..\real resumes\Nikhil Kadam_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:11,825 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:11,826 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:12,018 - sereena_parser.main - INFO - Successfully parsed Pandurang_CV.docx in 0.19s
+2025-10-13 01:37:15,317 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:15,318 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:15,485 - sereena_parser.main - INFO - Successfully parsed Priyanka Bhange_CV.docx in 0.17s
+2025-10-13 01:37:17,774 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:17,775 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:18,665 - sereena_parser.main - INFO - Successfully parsed Resume DXC JayantKadam.docx in 0.89s
+2025-10-13 01:37:21,805 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:21,805 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:22,190 - sereena_parser.main - INFO - Successfully parsed Resume-Nilesh Bhole.pdf in 0.38s
+2025-10-13 01:37:25,901 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:25,902 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:26,116 - sereena_parser.main - INFO - Successfully parsed Resume-Ravindra.docx in 0.21s
+2025-10-13 01:37:29,942 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:29,943 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:29,945 - sereena_parser.main - ERROR - Error extracting DOCX ..\real resumes\Resume_Arunkumar_Borreddi.doc: file '..\real resumes\Resume_Arunkumar_Borreddi.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:29,945 - sereena_parser.main - ERROR - Error parsing ..\real resumes\Resume_Arunkumar_Borreddi.doc: file '..\real resumes\Resume_Arunkumar_Borreddi.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:31,708 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:31,709 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:31,868 - sereena_parser.main - INFO - Successfully parsed Rizwan Shaikh_CV.docx in 0.16s
+2025-10-13 01:37:35,829 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:35,830 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:35,946 - sereena_parser.main - INFO - Successfully parsed SaikatCV.docx in 0.12s
+2025-10-13 01:37:39,224 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:39,224 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:39,227 - sereena_parser.main - ERROR - Error extracting DOCX ..\real resumes\Sameer Torne_CV.doc: file '..\real resumes\Sameer Torne_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:39,227 - sereena_parser.main - ERROR - Error parsing ..\real resumes\Sameer Torne_CV.doc: file '..\real resumes\Sameer Torne_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-13 01:37:40,659 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:40,659 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:41,206 - sereena_parser.main - INFO - Successfully parsed Shahre_alam_Khan_Resume_Oct2020.docx in 0.55s
+2025-10-13 01:37:44,599 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:44,599 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:44,878 - sereena_parser.main - INFO - Successfully parsed siddhesh resume.sas1.docx in 0.28s
+2025-10-13 01:37:47,759 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:47,760 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:47,874 - sereena_parser.main - INFO - Successfully parsed Sreenivasula_CV.docx in 0.11s
+2025-10-13 01:37:51,558 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:51,558 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:51,752 - sereena_parser.main - INFO - Successfully parsed Sultan Shaikh_CV.docx in 0.19s
+2025-10-13 01:37:55,376 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:55,376 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:55,495 - sereena_parser.main - INFO - Successfully parsed Sunil Khule_CV.docx in 0.12s
+2025-10-13 01:37:58,460 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:37:58,460 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:37:58,644 - sereena_parser.main - INFO - Successfully parsed Sunny Bauva_CV.docx in 0.18s
+2025-10-13 01:38:01,508 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:38:01,508 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:38:01,642 - sereena_parser.main - INFO - Successfully parsed Sushma Singh_Resume.pdf in 0.13s
+2025-10-13 01:38:03,264 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:38:03,265 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:38:03,608 - sereena_parser.main - INFO - Successfully parsed Tushar Ugale_CV.pdf in 0.34s
+2025-10-13 01:38:07,439 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:38:07,440 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:38:08,350 - sereena_parser.main - INFO - Successfully parsed UmeshSingh_Resume.pdf in 0.91s
+2025-10-13 01:38:11,719 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:38:11,720 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:38:11,850 - sereena_parser.main - INFO - Successfully parsed vijaykumar Resume.docx in 0.13s
+2025-10-13 01:38:15,724 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:38:15,724 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:38:16,003 - sereena_parser.main - INFO - Successfully parsed Vikas D. Sonawane (1).docx in 0.28s
+2025-10-13 01:38:19,493 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-13 01:38:19,493 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-13 01:38:19,721 - sereena_parser.main - INFO - Successfully parsed Yogesh_Wankhede_resume -Final.docx in 0.23s

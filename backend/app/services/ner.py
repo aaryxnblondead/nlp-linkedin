@@ -21,9 +21,10 @@ Design notes:
 """
 from __future__ import annotations
 
-from typing import List, Dict, Any, Optional, Tuple
-import re
+from typing import List, Dict, Any, Optional, Tuple, Set
 import os
+import re
+import csv
 
 try:
     import spacy
@@ -37,6 +38,10 @@ except Exception:  # pragma: no cover
 _NLP = None  # lazy-loaded spaCy model
 _SKILL_MATCHER = None
 _TITLE_MATCHER = None
+_INSTITUTION_DB_LOADED = False
+_INSTITUTION_NAMES: Set[str] = set()
+_INSTITUTION_CANONICAL: Dict[str, str] = {}
+_INSTITUTION_PREFIX_INDEX: Dict[str, List[str]] = {}
 
 
 SKILLS_DB = [
@@ -47,9 +52,13 @@ SKILLS_DB = [
     "nlp", "computer vision", "deep learning", "machine learning", "data analysis", "etl",
     # Web/Backend
     "javascript", "typescript", "node", "nodejs", "express", "react", "angular", "vue", "next.js", "nextjs", "django", "flask", "fastapi",
+    # Java stack extras
+    "spring", "spring boot", "spring mvc", "hibernate", "jpa", "jsp", "servlet",
     # DevOps/Cloud
     "docker", "kubernetes", "helm", "terraform", "ansible", "jenkins", "git", "github actions",
     "aws", "azure", "gcp", "cloudwatch", "lambda", "s3", "ec2",
+    # OS / Platform
+    "linux", "red hat", "redhat", "red hat linux",
     # Other
     "spark", "hadoop", "airflow", "kafka", "snowflake", "databricks", "tableau", "power bi",
     # Cloud/data extras
@@ -60,8 +69,8 @@ SKILLS_DB = [
     "rabbitmq", "sqs", "pubsub",
     # Infra/observability
     "prometheus", "grafana", "opentelemetry", "elk", "elasticsearch", "logstash", "kibana",
-    # Mobile
-    "react native", "flutter", "swift", "kotlin",
+    # Mobile / Hybrid
+    "react native", "flutter", "swift", "kotlin", "ionic", "ionic 3",
     # Security
     "owasp", "burp suite", "metasploit", "nessus", "siem", "splunk", "crowdstrike", "wazuh", "okta", "auth0", "iam",
     # Analytics/BI
@@ -76,6 +85,8 @@ SKILLS_DB = [
     "mlflow", "tensorboard", "wandb", "seldon", "bentoml", "ray", "ray serve",
     # Messaging extras
     "nats", "mqtt",
+    # Data/Stat tooling
+    "sas", "proc freq", "proc sql",
     # Misc
     "grpc", "rest", "graphQL", "graphql", "openapi", "swagger",
 ]
@@ -113,10 +124,248 @@ NAME_HEADING_STOP = {
     "summary", "objective", "visa status", "java", "html5", "html", "python", "aws",
 }
 
+# Explicit role/title phrases that often appear at top and should not be misclassified as names
+JOB_TITLE_STOPWORDS = {
+    "software engineer", "senior software engineer", "staff software engineer", "principal engineer",
+    "team lead", "technical lead", "tech lead", "engineering manager", "project manager", "program manager",
+    "data scientist", "data engineer", "ml engineer", "sde", "sdet", "qa engineer",
+    "di developer", "actimize ifm", "actimize"
+}
+
+# Degree words and tokens that should never be mistaken for names
+DEGREE_WORDS = {
+    "degree", "bcom", "b.com", "bsc", "b.sc", "ba", "b.a", "be", "b.e", "btech", "b.tech",
+    "mcom", "m.com", "msc", "m.sc", "ma", "m.a", "me", "m.e", "mtech", "m.tech", "mba", "phd",
+}
+
+# Tokens that, if included, make a line implausible as a name
+NAME_TECH_NOISE = set([
+    "linux", "red", "hat", "redhat", "spring", "hibernate", "jpa", "jsp", "servlet", "proc", "freq",
+    "sql", "python", "java", "django", "flask", "react", "node", "kubernetes", "aws", "azure", "gcp"
+])
+
 DEGREE_PATTERNS = r"\b((b\.?s\.?|bsc|ba|be|b\.e\.|beng|b\.eng|bca|m\.?s\.?|msc|ma|me|m\.e\.|meng|m\.eng|mca|m\.?tech|mtech|b\.?tech|btech|ph\.?d\.?|phd|bachelor|master|doctorate)([^\n\r,)]{0,40})?)\b"
 INSTITUTION_HINT = r"\b(university|college|institute|school|polytechnic|iit|nit|state|tech)\b"
 UNI_COLLEGE_PATTERN = r"\b[A-Z][A-Za-z&\-\.\s]{1,80}(University|College|Institute|School|Polytechnic)\b"
 IIT_NIT_PATTERN = r"\b(?:IIT|NIT)\s+[A-Z][A-Za-z\-\s]{1,50}\b"
+
+
+def _project_root() -> str:
+    # This file is backend/app/services/ner.py → go up three levels to repo root
+    here = os.path.abspath(os.path.dirname(__file__))
+    return os.path.abspath(os.path.join(here, "..", "..", ".."))
+
+
+def _norm_inst_name(s: str) -> str:
+    s = (s or "").strip()
+    # Normalize whitespace, punctuation, and case; keep ampersands and '.' out
+    s = re.sub(r"[\u2018\u2019\u201C\u201D]", "'", s)  # fancy quotes → '
+    s = re.sub(r"[\.,]", " ", s)
+    s = re.sub(r"\s+", " ", s)
+    return s.lower().strip()
+
+
+def _index_institution_name(canon: str) -> None:
+    """Index a canonical institution name for fast prefix filtering."""
+    n = _norm_inst_name(canon)
+    if not n:
+        return
+    _INSTITUTION_NAMES.add(n)
+    _INSTITUTION_CANONICAL[n] = canon.strip()
+    first = n.split(" ")[0]
+    if first:
+        _INSTITUTION_PREFIX_INDEX.setdefault(first, []).append(n)
+
+
+def _load_institution_db() -> None:
+    global _INSTITUTION_DB_LOADED
+    if _INSTITUTION_DB_LOADED:
+        return
+    base = os.getenv("INSTITUTION_CSV_DIR") or _project_root()
+    candidates = [
+        os.path.join(base, "University-ALL UNIVERSITIES.csv"),
+        os.path.join(base, "College-ALL COLLEGE.csv"),
+        os.path.join(base, "Standalone-ALL STANDALONE.csv"),
+    ]
+    for fp in candidates:
+        try:
+            if not os.path.exists(fp):
+                continue
+            with open(fp, "r", encoding="utf-8", errors="ignore") as f:
+                # Use csv.reader to detect the true header row
+                rdr = csv.reader(f)
+                rows = list(rdr)
+                if not rows:
+                    continue
+                header_idx = None
+                for idx, row in enumerate(rows[:20]):  # search first 20 lines for header
+                    line = ",".join(row)
+                    if re.search(r"\b(Name|University Name)\b", line, flags=re.IGNORECASE):
+                        header_idx = idx
+                        break
+                if header_idx is None:
+                    # fallback: assume first non-empty row is header
+                    for idx, row in enumerate(rows):
+                        if any(cell.strip() for cell in row):
+                            header_idx = idx
+                            break
+                if header_idx is None:
+                    continue
+                headers = [h.strip() for h in rows[header_idx]]
+                # Map of header name lower to index
+                hmap = { (h or "").strip().lower(): i for i, h in enumerate(headers) }
+                # Candidate name columns in priority
+                name_candidates = [
+                    "name",
+                    "university name",
+                    "university",
+                    "college name",
+                    "institution name",
+                    "institute name",
+                ]
+                name_col_idx = None
+                for key in name_candidates:
+                    if key in hmap:
+                        name_col_idx = hmap[key]
+                        break
+                # If still not found, attempt heuristic: choose the column with 'college' or 'university' in header
+                if name_col_idx is None:
+                    for k, i in hmap.items():
+                        if any(t in k for t in ["college", "university", "institute", "institution", "school"]):
+                            name_col_idx = i
+                            break
+                # Iterate data rows after header
+                for row in rows[header_idx+1:]:
+                    if not row or all(not (c and c.strip()) for c in row):
+                        continue
+                    # Skip preface/banners
+                    if name_col_idx is None:
+                        # Try to pick a likely cell (first non-code value)
+                        cells = [c.strip() for c in row if c and c.strip()]
+                        if not cells:
+                            continue
+                        candidate = None
+                        for c in cells:
+                            if re.match(r"^[A-Z]-?\d+", c):  # code like C-xxxx or U-xxxx
+                                continue
+                            candidate = c
+                            break
+                        name_val = candidate
+                    else:
+                        name_val = row[name_col_idx].strip() if name_col_idx < len(row) and row[name_col_idx] else None
+                    if not name_val:
+                        continue
+                    if re.match(r"^(ALL\s+|\(As on Date:)", name_val, flags=re.IGNORECASE):
+                        continue
+                    _index_institution_name(name_val)
+        except Exception:
+            # Non-fatal: continue with what we could load
+            continue
+    _INSTITUTION_DB_LOADED = True
+
+
+def _match_institution_in_text(text: str) -> Optional[str]:
+    """Try to find an institution mention in the provided text window using the CSV DB.
+
+    Strategy:
+    - Extract capitalized phrases ending with University/College/Institute/School/Polytechnic (and IIT/NIT ...)
+    - Normalize and check for exact hit in our DB.
+    - If not exact, restrict candidate space by first token and compute a simple token-overlap score; pick best >= 0.6.
+    """
+    if not text:
+        return None
+    _load_institution_db()
+    # Extract candidates via regex, preferring phrases after prepositions like 'from', 'at', 'in', 'of'
+    cands: List[str] = []
+    prep = r"(?:from|at|in|of)\s+"
+    pat_iitnit = re.compile(prep + r"((?:IIT|NIT)\s+[A-Z][A-Za-z\-\s]{1,50})")
+    pat_uni = re.compile(prep + r"([A-Z][A-Za-z&\-\.\s]{1,120}?(?:University|College|Institute|School|Polytechnic)(?:,\s*[A-Z][A-Za-z\-\.\s]{1,40})?)")
+    for m in pat_iitnit.finditer(text):
+        cands.append(m.group(1))
+    for m in pat_uni.finditer(text):
+        cands.append(m.group(1))
+    # Fallback to generic patterns if nothing captured via prepositions
+    if not cands:
+        for m in re.finditer(IIT_NIT_PATTERN, text):
+            cands.append(m.group(0))
+        for m in re.finditer(UNI_COLLEGE_PATTERN, text):
+            cands.append(m.group(0))
+    best_name = None
+    best_score = 0.0
+
+    def _clean_candidate_norm(s: str) -> str:
+        # Remove any leading field abbreviations or trailing noise before the institution keyword
+        s = s.strip()
+        # If prepositions appear before the keyword, keep only the tail after the last preposition
+        kw_positions = []
+        for kw in (" university", " college", " institute", " school", " polytechnic"):
+            i = s.find(kw)
+            if i != -1:
+                kw_positions.append(i)
+        if kw_positions:
+            cut = min(kw_positions)
+            head = s[:cut]
+            tail = s[cut:]
+            # In head, find the last occurrence of a preposition and drop everything before it
+            last_prep = max([head.rfind(p) for p in [" from ", " in ", " of ", " at "]] + [-1])
+            if last_prep != -1:
+                head = head[last_prep+1:]
+            s = (head + tail).strip()
+        # Drop leading field abbreviations
+        fields_abbr = {"cse","ece","eee","me","ce","it","cs","mca","bca","mba","bba","m.com","b.com","bsc","msc"}
+        toks = s.split()
+        while toks and toks[0].lower().strip(".,") in fields_abbr:
+            toks.pop(0)
+        return " ".join(toks)
+    def _expand_acronyms(tokens: Set[str]) -> Set[str]:
+        tokens = set(tokens)
+        if 'iit' in tokens:
+            tokens |= {'indian','institute','of','technology'}
+        if 'nit' in tokens:
+            tokens |= {'national','institute','of','technology'}
+        if 'jntu' in tokens:
+            tokens |= {'jawaharlal','nehru','technological','university'}
+        if 'jntuk' in tokens:
+            tokens |= {'jawaharlal','nehru','technological','university','kakinada'}
+        if 'jntua' in tokens:
+            tokens |= {'jawaharlal','nehru','technological','university','anantapur'}
+        if 'jntuh' in tokens:
+            tokens |= {'jawaharlal','nehru','technological','university','hyderabad'}
+        return tokens
+
+    for cand in cands:
+        norm_c = _norm_inst_name(cand)
+        norm_c = _clean_candidate_norm(norm_c)
+        if not norm_c:
+            continue
+        # Direct exact match
+        if norm_c in _INSTITUTION_NAMES:
+            return _INSTITUTION_CANONICAL.get(norm_c, cand.strip())
+        # Prefix-restricted fuzzy match
+        first = norm_c.split(" ")[0]
+        pool = _INSTITUTION_PREFIX_INDEX.get(first, [])
+        if not pool and len(first) > 3:
+            # Try second token as backup prefix
+            parts = norm_c.split()
+            if len(parts) > 1:
+                pool = _INSTITUTION_PREFIX_INDEX.get(parts[1], [])
+        # Tokenize and expand acronyms
+        cand_tokens = set(t for t in re.split(r"[^a-z]+", norm_c) if t)
+        cand_tokens = _expand_acronyms(cand_tokens)
+        for inst_norm in pool:
+            inst_tokens = set(t for t in re.split(r"[^a-z]+", inst_norm) if t)
+            if not inst_tokens:
+                continue
+            inter = len(cand_tokens & inst_tokens)
+            union = len(cand_tokens | inst_tokens)
+            j = inter / union if union else 0.0
+            # Also allow containment boost (substring)
+            if norm_c in inst_norm or inst_norm in norm_c:
+                j = max(j, 0.9)
+            if j > best_score and j >= 0.6:
+                best_score = j
+                best_name = _INSTITUTION_CANONICAL.get(inst_norm, inst_norm)
+    return best_name
 
 
 def _get_nlp():
@@ -172,6 +421,15 @@ def _get_nlp():
             {"label": "GPE", "pattern": "India"},
             {"label": "GPE", "pattern": "Canada"},
         ]
+        # Add a light pattern for Indian educational suffixes to bias spaCy toward ORG for these
+        patterns.extend([
+            {"label": "ORG", "pattern": "IIT"},
+            {"label": "ORG", "pattern": "NIT"},
+            {"label": "ORG", "pattern": "University"},
+            {"label": "ORG", "pattern": "College"},
+            {"label": "ORG", "pattern": "Institute"},
+            {"label": "ORG", "pattern": "Polytechnic"},
+        ])
         ruler.add_patterns(patterns)
     # Build PhraseMatchers
     if PhraseMatcher is not None:
@@ -200,8 +458,48 @@ DATE_RANGE_RE = re.compile(
 
 
 def _extract_email(text: str) -> Optional[str]:
+    if not text:
+        return None
+    # 1) Direct match
     m = EMAIL_RE.search(text)
-    return m.group(0) if m else None
+    if m:
+        return m.group(0)
+    # 2) Deobfuscate common forms like "name (at) domain (dot) com" and spaced separators
+    t = text
+    # Replace [at]/(at)/ at /{at} → @
+    t = re.sub(r"(?i)\[\s*at\s*\]|\(\s*at\s*\)|\{\s*at\s*\}|\s+at\s+|\bat\s*the\s*rate\b", "@", t)
+    # Replace [dot]/(dot)/ dot /{dot} → .
+    t = re.sub(r"(?i)\[\s*dot\s*\]|\(\s*dot\s*\)|\{\s*dot\s*\}|\s+dot\s+", ".", t)
+    # Collapse spaces around @ and .
+    t = re.sub(r"\s*([.@])\s*", r"\1", t)
+    m = EMAIL_RE.search(t)
+    if m:
+        return m.group(0)
+    # 3) Pattern: user at domain dot tld (optional dot tld2)
+    pat = re.compile(r"(?i)\b([A-Za-z0-9._%+-]{1,64})\s*(?:at|\[at\]|\(at\))\s*([A-Za-z0-9.-]{1,255})\s*(?:dot|\[dot\]|\(dot\))\s*([A-Za-z]{2,15})(?:\s*(?:dot|\[dot\]|\(dot\))\s*([A-Za-z]{2,15}))?\b")
+    m = pat.search(text)
+    if m:
+        user = m.group(1)
+        domain = m.group(2)
+        tld1 = m.group(3)
+        tld2 = m.group(4)
+        email = f"{user}@{domain}.{tld1}"
+        if tld2:
+            email = f"{email}.{tld2}"
+        return email.lower()
+    # 4) As a last attempt, look for patterns like "user@domain com" (space before TLD)
+    pat2 = re.compile(r"(?i)\b([A-Za-z0-9._%+-]{1,64})\s*@\s*([A-Za-z0-9.-]{1,255})\s+([A-Za-z]{2,10})(?:\s+([A-Za-z]{2,10}))?\b")
+    m = pat2.search(text)
+    if m:
+        user = m.group(1)
+        domain = m.group(2)
+        tld1 = m.group(3)
+        tld2 = m.group(4)
+        email = f"{user}@{domain}.{tld1}"
+        if tld2:
+            email = f"{email}.{tld2}"
+        return email.lower()
+    return None
 
 
 def _extract_phone(text: str) -> Optional[str]:
@@ -263,6 +561,13 @@ def _looks_like_bad_name(line: str) -> bool:
         return True
     if any(w in ll for w in NAME_HEADING_STOP):
         return True
+    if any(w in ll for w in JOB_TITLE_STOPWORDS):
+        return True
+    if any(w in ll for w in DEGREE_WORDS):
+        return True
+    # Obvious technology tokens present → not a name
+    if any(tok in ll for tok in NAME_TECH_NOISE):
+        return True
     # Single token or too many tokens
     words = [w for w in re.split(r"[^A-Za-z]+", l) if w]
     if len(words) == 1:
@@ -274,7 +579,38 @@ def _looks_like_bad_name(line: str) -> bool:
         return True
     if all(w.isupper() for w in words if w):
         return True
+    # Mostly lowercase or camel/techy casing → implausible
+    if sum(1 for w in words if w[:1].isupper()) < max(2, len(words)-1):
+        return True
     return False
+
+
+def _is_plausible_name(cand: str) -> bool:
+    if not cand:
+        return False
+    c = _norm_ws(cand)
+    if _looks_like_bad_name(c):
+        return False
+    # Reject if contains degree words or tech noise explicitly
+    cl = c.lower()
+    if any(w in cl for w in DEGREE_WORDS):
+        return False
+    if any(w in cl for w in NAME_TECH_NOISE):
+        return False
+    # Require 2-4 tokens with initial caps (allow small lowercase particles)
+    parts = [p for p in re.split(r"[^A-Za-z.'-]", c) if p]
+    if not (2 <= len(parts) <= 4):
+        return False
+    small = {"de","da","del","van","von","bin","al"}
+    caps_ok = 0
+    for p in parts:
+        if p.lower() in small:
+            continue
+        if p[0].isupper():
+            caps_ok += 1
+    if caps_ok < 2:
+        return False
+    return True
 
 
 def _extract_name(doc, text: str) -> Optional[str]:
@@ -295,7 +631,7 @@ def _extract_name(doc, text: str) -> Optional[str]:
         for ent in doc.ents:
             if ent.label_ == "PERSON" and ent.start_char < len(first_block) + 1:
                 cand = _norm_ws(ent.text)
-                if not _looks_like_bad_name(cand) and 3 <= len(cand) <= 80:
+                if _is_plausible_name(cand) and 3 <= len(cand) <= 80:
                     best = cand
                     break
         if best:
@@ -308,14 +644,14 @@ def _extract_name(doc, text: str) -> Optional[str]:
         tokens = [t for t in re.split(r"[^A-Za-z'-]", line) if t]
         if 2 <= len(tokens) <= 4 and sum(1 for t in tokens if t[:1].isupper()) >= max(2, len(tokens)-1):
             cand = _norm_ws(line)
-            if 3 <= len(cand) <= 80 and not EMAIL_RE.search(cand):
+            if 3 <= len(cand) <= 80 and not EMAIL_RE.search(cand) and _is_plausible_name(cand):
                 return cand
 
     # 3) Derive from email if available
     email = _extract_email(text)
     if email:
         en = _email_to_name(email)
-        if en:
+        if en and _is_plausible_name(en):
             return en
 
     return None
@@ -385,6 +721,10 @@ def _extract_education(doc, text: str) -> List[Dict[str, Any]]:
             inst_text = inst_m2.group(0)
         elif inst_m1:
             inst_text = inst_m1.group(0)
+        # Try CSV-backed institution DB match for higher precision/recall
+        db_match = _match_institution_in_text(window)
+        if db_match:
+            inst_text = db_match
         date_m = DATE_RANGE_RE.search(window)
         item = {
             "degree": _norm_ws(deg_m.group(1)) if deg_m else None,
@@ -417,52 +757,55 @@ def _extract_experience(doc, text: str) -> List[Dict[str, Any]]:
     out: List[Dict[str, Any]] = []
     lines = [l for l in text.splitlines() if l.strip()]
     header_re = re.compile(r"^(experience|work experience|professional experience|employment history|work history)\b", re.IGNORECASE)
+    nlp = _get_nlp()
     for idx, line in enumerate(lines):
         if header_re.search(line.strip()):
             continue  # skip section headers
-        # Title via matcher
+        # Title via matcher (on the line only)
         title_found = None
-        nlp = _get_nlp()
-        if nlp is not None and _TITLE_MATCHER is not None:
+        if nlp is not None and PhraseMatcher is not None and _TITLE_MATCHER is not None:
             try:
-                d_line = nlp(line)  # process line for matching
-                titles = _phrase_matches(_TITLE_MATCHER, d_line)
-                if titles:
-                    title_found = titles[0]
+                doc_line = nlp.make_doc(line)
+                matches = _TITLE_MATCHER(doc_line)
+                for _, s, e in matches:
+                    span = doc_line[s:e]
+                    title_found = span.text
+                    break
             except Exception:
                 pass
-        # Org via spaCy ORG in the same/next line
+        # Org and location via spaCy ORG/GPE in the same line
         org_found = None
         loc_found = None
         start, end = None, None
         snippet = line
         date_m = DATE_RANGE_RE.search(line)
-        if not date_m and idx+1 < len(lines):
-            # avoid consuming the next section header as a date context
-            nxt = lines[idx+1]
+        if not date_m and idx + 1 < len(lines):
+            nxt = lines[idx + 1]
             if not header_re.search(nxt.strip()):
                 date_m = DATE_RANGE_RE.search(nxt)
         if date_m:
             start, end = _split_date_range(date_m.group(0))
         if doc is not None:
-            dl = doc.char_span(text.find(line), text.find(line) + len(line))
-            if dl is not None:
-                for ent in dl.ents:
-                    if ent.label_ == "ORG" and not org_found:
-                        org_found = ent.text
-                    if ent.label_ in ("GPE", "LOC") and not loc_found:
-                        loc_found = ent.text
-        # Require at least a title or a company to minimize noise
-        if title_found or org_found:
+            span_start = text.find(line)
+            if span_start != -1:
+                span_end = span_start + len(line)
+                dl = doc.char_span(span_start, span_end)
+                if dl is not None:
+                    for ent in dl.ents:
+                        if ent.label_ == "ORG" and not org_found:
+                            org_found = ent.text
+                        if ent.label_ in ("GPE", "LOC") and not loc_found:
+                            loc_found = ent.text
+        # Require at least a title or a company or a date to minimize noise
+        if title_found or org_found or date_m:
             out.append({
-                "title": title_found,
-                "company": org_found,
-                "location": loc_found,
+                "title": _norm_ws(title_found) if title_found else None,
+                "company": _norm_ws(org_found) if org_found else None,
+                "location": _norm_ws(loc_found) if loc_found else None,
                 "start": start,
                 "end": end,
                 "snippet": _norm_ws(snippet)[:300],
             })
-    # Deduplicate similar entries
     return dedupe_dict_list(out)
 
 

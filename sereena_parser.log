@@ -420,3 +420,373 @@ google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found fo
 2025-10-12 16:05:30,519 - sereena_parser.main - INFO - Loaded spaCy model successfully
 2025-10-12 16:05:30,521 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
 2025-10-12 16:05:31,050 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.53s
+2025-10-12 22:04:35,210 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:04:35,212 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:04:35,605 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.39s
+2025-10-12 22:04:39,170 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 22:04:39,171 - app.services.generation - INFO - Using Google Gemini model: gemini-1.5-flash
+2025-10-12 22:04:39,417 - app.services.generation - ERROR - Google Gemini generation failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 75, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 22:04:39,425 - app.services.generation - ERROR - Core generation failed for provider 'google'. Error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 162, in generate
+    return _generate_google(question, contexts, max_new_tokens)
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 75, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 22:04:39,738 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 22:04:39,738 - app.services.generation - INFO - Using Google Gemini model: gemini-1.5-flash
+2025-10-12 22:04:39,979 - app.services.generation - ERROR - Google Gemini generation failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 75, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 22:04:39,983 - app.services.generation - ERROR - Core generation failed for provider 'google'. Error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 162, in generate
+    return _generate_google(question, contexts, max_new_tokens)
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 75, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 22:04:39,991 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 22:04:39,991 - app.services.generation - INFO - Using Google Gemini model: gemini-1.5-flash
+2025-10-12 22:04:40,183 - app.services.generation - ERROR - Google Gemini generation failed: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 75, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 22:04:40,187 - app.services.generation - ERROR - Core generation failed for provider 'google'. Error: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+Traceback (most recent call last):
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 162, in generate
+    return _generate_google(question, contexts, max_new_tokens)
+  File "C:\Users\myind\Downloads\nlp linkedin\backend\app\services\generation.py", line 75, in _generate_google
+    resp = model.generate_content(
+        prompt,
+        generation_config={"max_output_tokens": max_new_tokens},
+        request_options={"timeout": 20},
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\generativeai\generative_models.py", line 331, in generate_content
+    response = self._client.generate_content(
+        request,
+        **request_options,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\ai\generativelanguage_v1beta\services\generative_service\client.py", line 835, in generate_content
+    response = rpc(
+        request,
+    ...<2 lines>...
+        metadata=metadata,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\gapic_v1\method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 294, in retry_wrapped_func
+    return retry_target(
+        target,
+    ...<3 lines>...
+        on_error=on_error,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 156, in retry_target
+    next_sleep = _retry_error_helper(
+        exc,
+    ...<6 lines>...
+        timeout,
+    )
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_base.py", line 214, in _retry_error_helper
+    raise final_exc from source_exc
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\retry\retry_unary.py", line 147, in retry_target
+    result = target()
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\timeout.py", line 130, in func_with_timeout
+    return func(*args, **kwargs)
+  File "C:\Users\myind\AppData\Local\Programs\Python\Python313\Lib\site-packages\google\api_core\grpc_helpers.py", line 77, in error_remapped_callable
+    raise exceptions.from_grpc_error(exc) from exc
+google.api_core.exceptions.NotFound: 404 models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ListModels to see the list of available models and their supported methods.
+2025-10-12 22:08:11,116 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:08:11,117 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:08:11,484 - sereena_parser.main - INFO - Successfully parsed AaryanSinghResume.pdf in 0.37s
+2025-10-12 22:08:13,605 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 22:08:14,356 - app.services.generation - INFO - Using Google Gemini model: gemini-2.0-flash
+2025-10-12 22:08:16,774 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 22:08:16,774 - app.services.generation - INFO - Using Google Gemini model: gemini-2.0-flash
+2025-10-12 22:08:18,759 - app.services.generation - INFO - Generation request received. Provider: 'google'
+2025-10-12 22:08:18,760 - app.services.generation - INFO - Using Google Gemini model: gemini-2.0-flash
+2025-10-12 22:41:02,283 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:02,284 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:02,417 - sereena_parser.main - INFO - Successfully parsed aamir resume latest.docx in 0.13s
+2025-10-12 22:41:05,903 - sentence_transformers.SentenceTransformer - INFO - Use pytorch device_name: cpu
+2025-10-12 22:41:05,903 - sentence_transformers.SentenceTransformer - INFO - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
+2025-10-12 22:41:09,432 - chromadb.telemetry.product.posthog - INFO - Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-10-12 22:41:11,270 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:11,270 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:11,502 - sereena_parser.main - INFO - Successfully parsed Abdul Rahman.Khan_CV.pdf in 0.23s
+2025-10-12 22:41:13,637 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:13,637 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:15,648 - sereena_parser.main - INFO - Successfully parsed Aditya Arya_CV.pdf in 2.01s
+2025-10-12 22:41:17,446 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:17,447 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:17,903 - sereena_parser.main - INFO - Successfully parsed Anne Mariya_CV.pdf in 0.46s
+2025-10-12 22:41:20,472 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:20,472 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:20,633 - sereena_parser.main - INFO - Successfully parsed Haidar Mujawar-CV.docx in 0.16s
+2025-10-12 22:41:22,819 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:22,819 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:22,822 - sereena_parser.main - ERROR - Error extracting DOCX real resumes\Lakshmi Narayana_CV.doc: file 'real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:22,822 - sereena_parser.main - ERROR - Error parsing real resumes\Lakshmi Narayana_CV.doc: file 'real resumes\Lakshmi Narayana_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:29,019 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:29,019 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:29,494 - sereena_parser.main - INFO - Successfully parsed Mahesh_SAS_Resume.pdf in 0.47s
+2025-10-12 22:41:31,916 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:31,917 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:31,918 - sereena_parser.main - ERROR - Error extracting DOCX real resumes\Nikhil Kadam_CV.doc: file 'real resumes\Nikhil Kadam_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:31,918 - sereena_parser.main - ERROR - Error parsing real resumes\Nikhil Kadam_CV.doc: file 'real resumes\Nikhil Kadam_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:32,430 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:32,430 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:32,570 - sereena_parser.main - INFO - Successfully parsed Pandurang_CV.docx in 0.14s
+2025-10-12 22:41:34,564 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:34,564 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:34,680 - sereena_parser.main - INFO - Successfully parsed Priyanka Bhange_CV.docx in 0.12s
+2025-10-12 22:41:36,242 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:36,242 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:36,855 - sereena_parser.main - INFO - Successfully parsed Resume DXC JayantKadam.docx in 0.61s
+2025-10-12 22:41:38,709 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:38,709 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:38,986 - sereena_parser.main - INFO - Successfully parsed Resume-Nilesh Bhole.pdf in 0.28s
+2025-10-12 22:41:41,239 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:41,239 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:41,389 - sereena_parser.main - INFO - Successfully parsed Resume-Ravindra.docx in 0.15s
+2025-10-12 22:41:43,442 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:43,443 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:43,445 - sereena_parser.main - ERROR - Error extracting DOCX real resumes\Resume_Arunkumar_Borreddi.doc: file 'real resumes\Resume_Arunkumar_Borreddi.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:43,445 - sereena_parser.main - ERROR - Error parsing real resumes\Resume_Arunkumar_Borreddi.doc: file 'real resumes\Resume_Arunkumar_Borreddi.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:43,957 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:43,957 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:44,078 - sereena_parser.main - INFO - Successfully parsed Rizwan Shaikh_CV.docx in 0.12s
+2025-10-12 22:41:46,571 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:46,571 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:46,664 - sereena_parser.main - INFO - Successfully parsed SaikatCV.docx in 0.09s
+2025-10-12 22:41:49,545 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:49,546 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:49,548 - sereena_parser.main - ERROR - Error extracting DOCX real resumes\Sameer Torne_CV.doc: file 'real resumes\Sameer Torne_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:49,549 - sereena_parser.main - ERROR - Error parsing real resumes\Sameer Torne_CV.doc: file 'real resumes\Sameer Torne_CV.doc' is not a Word file, content type is 'application/vnd.openxmlformats-officedocument.themeManager+xml'
+2025-10-12 22:41:50,122 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:50,123 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:50,459 - sereena_parser.main - INFO - Successfully parsed Shahre_alam_Khan_Resume_Oct2020.docx in 0.34s
+2025-10-12 22:41:52,581 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:52,581 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:52,766 - sereena_parser.main - INFO - Successfully parsed siddhesh resume.sas1.docx in 0.18s
+2025-10-12 22:41:54,517 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:54,517 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:54,631 - sereena_parser.main - INFO - Successfully parsed Sreenivasula_CV.docx in 0.11s
+2025-10-12 22:41:56,834 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:56,835 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:56,991 - sereena_parser.main - INFO - Successfully parsed Sultan Shaikh_CV.docx in 0.16s
+2025-10-12 22:41:59,528 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:41:59,529 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:41:59,662 - sereena_parser.main - INFO - Successfully parsed Sunil Khule_CV.docx in 0.13s
+2025-10-12 22:42:01,830 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:42:01,831 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:42:02,018 - sereena_parser.main - INFO - Successfully parsed Sunny Bauva_CV.docx in 0.19s
+2025-10-12 22:42:03,889 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:42:03,889 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:42:04,416 - sereena_parser.main - INFO - Successfully parsed Sushma Singh_Resume.pdf in 0.53s
+2025-10-12 22:42:05,383 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:42:05,384 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:42:05,739 - sereena_parser.main - INFO - Successfully parsed Tushar Ugale_CV.pdf in 0.36s
+2025-10-12 22:42:07,659 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:42:07,659 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:42:07,984 - sereena_parser.main - INFO - Successfully parsed UmeshSingh_Resume.pdf in 0.32s
+2025-10-12 22:42:11,047 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:42:11,048 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:42:11,233 - sereena_parser.main - INFO - Successfully parsed vijaykumar Resume.docx in 0.19s
+2025-10-12 22:42:14,466 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:42:14,466 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:42:14,846 - sereena_parser.main - INFO - Successfully parsed Vikas D. Sonawane (1).docx in 0.38s
+2025-10-12 22:42:18,030 - sereena_parser.main - INFO - Loaded spaCy model successfully
+2025-10-12 22:42:18,031 - sereena_parser.main - INFO - Initialized Sereena Parser with 4 workers
+2025-10-12 22:42:18,373 - sereena_parser.main - INFO - Successfully parsed Yogesh_Wankhede_resume -Final.docx in 0.34s
