@@ -119,9 +119,9 @@ LOC_STOPWORDS = {
 
 # Words/phrases that strongly indicate a non-name heading or label near the top of resumes
 NAME_HEADING_STOP = {
-    "mobile", "mobile no", "phone", "email", "curriculum vitae", "resume", "profile",
-    "product demos", "skills", "technical skills", "education", "experience", "projects",
-    "summary", "objective", "visa status", "java", "html5", "html", "python", "aws",
+    "mobile", "mobile no", "phone", "email", "curriculum vitae", "resume", "cv", "profile",
+    "product demos", "skills", "technical skills", "education", "experience", "projects", "resume",
+    "summary", "objective", "visa status", "java", "html5", "html", "python", "aws", "sas", "azure", 
 }
 
 # Explicit role/title phrases that often appear at top and should not be misclassified as names
@@ -129,7 +129,7 @@ JOB_TITLE_STOPWORDS = {
     "software engineer", "senior software engineer", "staff software engineer", "principal engineer",
     "team lead", "technical lead", "tech lead", "engineering manager", "project manager", "program manager",
     "data scientist", "data engineer", "ml engineer", "sde", "sdet", "qa engineer",
-    "di developer", "actimize ifm", "actimize"
+    "di developer", "actimize ifm", "actimize", "infotech", "sas", "flat", "files", "UI", "web", "web dev",
 }
 
 # Degree words and tokens that should never be mistaken for names
@@ -141,7 +141,7 @@ DEGREE_WORDS = {
 # Tokens that, if included, make a line implausible as a name
 NAME_TECH_NOISE = set([
     "linux", "red", "hat", "redhat", "spring", "hibernate", "jpa", "jsp", "servlet", "proc", "freq",
-    "sql", "python", "java", "django", "flask", "react", "node", "kubernetes", "aws", "azure", "gcp"
+    "sql", "python", "java", "django", "flask", "react", "node", "kubernetes", "aws", "azure", "gcp", "SAS", "Flat", "Files", "Infotech", 
 ])
 
 DEGREE_PATTERNS = r"\b((b\.?s\.?|bsc|ba|be|b\.e\.|beng|b\.eng|bca|m\.?s\.?|msc|ma|me|m\.e\.|meng|m\.eng|mca|m\.?tech|mtech|b\.?tech|btech|ph\.?d\.?|phd|bachelor|master|doctorate)([^\n\r,)]{0,40})?)\b"
@@ -559,6 +559,11 @@ def _looks_like_bad_name(line: str) -> bool:
     ll = l.lower()
     if not l:
         return True
+        # Names should not contain underscores or obvious resume keywords
+        if "_" in l:
+            return True
+        if re.search(r"\b(cv|resume)\b", ll):
+            return True
     if any(w in ll for w in NAME_HEADING_STOP):
         return True
     if any(w in ll for w in JOB_TITLE_STOPWORDS):
@@ -647,12 +652,7 @@ def _extract_name(doc, text: str) -> Optional[str]:
             if 3 <= len(cand) <= 80 and not EMAIL_RE.search(cand) and _is_plausible_name(cand):
                 return cand
 
-    # 3) Derive from email if available
-    email = _extract_email(text)
-    if email:
-        en = _email_to_name(email)
-        if en and _is_plausible_name(en):
-            return en
+    # Note: Do not derive name from email local-part; restrict to resume text entities/lines only.
 
     return None
 

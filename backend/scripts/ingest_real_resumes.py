@@ -49,6 +49,7 @@ def main():
     parser.add_argument("--root", default=os.path.join(PROJECT_ROOT, "real resumes"), help="Root folder of resumes")
     parser.add_argument("--max", type=int, default=None, help="Max number of resumes")
     parser.add_argument("--skip-existing", action="store_true", help="Skip if resume_path already present")
+    parser.add_argument("--reprocess-existing", action="store_true", help="Re-enqueue existing Applicants instead of creating duplicates")
     args = parser.parse_args()
 
     root = os.path.normpath(args.root)
@@ -64,14 +65,19 @@ def main():
         count = 0
         for path in files:
             name = os.path.splitext(os.path.basename(path))[0]
+            app = None
+            exists = None
             if args.skip_existing:
                 exists = db.query(Applicant).filter(Applicant.resume_path == path).first()
-                if exists:
+                if exists and not args.reprocess_existing:
                     continue
-            app = Applicant(name=name, email=None, resume_path=path, linkedin_url=None)
-            db.add(app)
-            db.commit()
-            db.refresh(app)
+            if exists is not None and args.reprocess_existing:
+                app = exists
+            if app is None:
+                app = Applicant(name=name, email=None, resume_path=path, linkedin_url=None)
+                db.add(app)
+                db.commit()
+                db.refresh(app)
             try:
                 process_applicant_pipeline.delay(app.id, path, None)
             except Exception:

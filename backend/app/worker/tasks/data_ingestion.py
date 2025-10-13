@@ -4,76 +4,302 @@ from app.core import config
 
 def process_resume_file(resume_path):
     import os
+    import re
+    import zipfile
+
+    def _clean_text(s: str) -> str:
+        if not s:
+            return ""
+        # Normalize newlines, drop control chars except tab/newline, collapse excessive blank lines
+        s = s.replace("\r\n", "\n").replace("\r", "\n")
+        s = re.sub(r"[\x00-\x08\x0B\x0C\x0E-\x1F]", " ", s)
+        # Fix common PDF hyphenation across line breaks: "word-\nnext" -> "wordnext"
+        s = re.sub(r"(\w)-\n(\w)", r"\1\2", s)
+        # Trim trailing spaces on lines
+        s = "\n".join([ln.rstrip() for ln in s.splitlines()])
+        # Collapse 3+ blank lines to 2
+        s = re.sub(r"\n{3,}", "\n\n", s)
+        return s.strip()
+
+    def _is_docx_container(path: str) -> bool:
+        try:
+            if not zipfile.is_zipfile(path):
+                return False
+            with zipfile.ZipFile(path) as z:
+                # A valid DOCX should contain word/document.xml
+                return any(n.lower() == "word/document.xml" for n in z.namelist())
+        except Exception:
+            return False
+
+    def _extract_pdf(path: str) -> str:
+        text = ""
+        # First: PyMuPDF
+        try:
+            import fitz  # type: ignore
+            with fitz.open(path) as doc:
+                parts = []
+                for page in doc:
+                    getter = getattr(page, "get_text", None)
+                    if callable(getter):
+                        try:
+                            parts.append(getter("text"))
+                        except TypeError:
+                            parts.append(getter())
+                    else:
+                        legacy = getattr(page, "getText", None)
+                        if callable(legacy):
+                            try:
+                                parts.append(legacy("text"))
+                            except TypeError:
+                                parts.append(legacy())
+                text = "\n".join(parts)
+        except Exception:
+            text = ""
+        if text and len(text) >= 80:
+            return _clean_text(text)
+        # Fallback: pdfminer.six
+        try:
+            from pdfminer.high_level import extract_text  # type: ignore
+            txt = extract_text(path) or ""
+            if txt and len(txt) > len(text):
+                text = txt
+        except Exception:
+            pass
+        if text and len(text) >= 40:
+            return _clean_text(text)
+        # Optional OCR fallback if pytesseract and PIL are installed
+        try:
+            import pytesseract  # type: ignore
+            from PIL import Image  # type: ignore
+            import fitz  # type: ignore
+            with fitz.open(path) as doc:
+                ocr_parts = []
+                for i in range(len(doc)):
+                    page = doc[i]
+                    # Limit to first 8 pages for OCR to keep it light
+                    if i >= 8:
+                        break
+                    # Try modern API
+                    pix = None
+                    try:
+                        get_pixmap = getattr(page, "get_pixmap", None)
+                        if callable(get_pixmap):
+                            pix = get_pixmap(dpi=200)  # type: ignore[call-arg]
+                    except Exception:
+                        pix = None
+                    if pix is None:
+                        # Older PyMuPDF fallback
+                        try:
+                            Matrix = getattr(fitz, "Matrix", None)
+                            getPixmap = getattr(page, "getPixmap", None)
+                            if callable(Matrix) and callable(getPixmap):
+                                mat = Matrix(200/72.0, 200/72.0)
+                                pix = getPixmap(matrix=mat)  # type: ignore[attr-defined]
+                        except Exception:
+                            pix = None
+                    if pix is not None:
+                        try:
+                            w = getattr(pix, "width", None)
+                            h = getattr(pix, "height", None)
+                            samples = getattr(pix, "samples", None)
+                            if w and h and samples:
+                                img = Image.frombytes("RGB", (int(w), int(h)), samples)
+                                ocr_parts.append(pytesseract.image_to_string(img))
+                        except Exception:
+                            continue
+                if ocr_parts:
+                    ocr_text = "\n".join(ocr_parts)
+                    if len(ocr_text) > len(text):
+                        text = ocr_text
+        except Exception:
+            pass
+        return _clean_text(text)
+
+    def _extract_docx(path: str) -> str:
+        try:
+            import docx  # type: ignore
+            d = docx.Document(path)
+            lines = [p.text for p in d.paragraphs]
+            # Include table text as well
+            try:
+                for table in d.tables:
+                    for row in table.rows:
+                        for cell in row.cells:
+                            t = (cell.text or "").strip()
+                            if t:
+                                lines.append(t)
+            except Exception:
+                pass
+            return _clean_text("\n".join(lines))
+        except Exception:
+            # As a last resort, try reading the raw XML
+            try:
+                with zipfile.ZipFile(path) as z:
+                    xml = z.read("word/document.xml").decode("utf-8", errors="ignore")
+                # Strip XML tags
+                xml = re.sub(r"<w:tab[^>]*/>", "\t", xml)
+                xml = re.sub(r"<[^>]+>", " ", xml)
+                return _clean_text(xml)
+            except Exception:
+                return ""
+
+    def _extract_doc(path: str) -> str:
+        # Some ".doc" files are actually docx containers; detect and treat accordingly
+        if _is_docx_container(path):
+            return _extract_docx(path)
+        # Some mis-labeled .doc might still be zip packages (themes, etc.); try extracting text from XML parts
+        try:
+            if zipfile.is_zipfile(path):
+                with zipfile.ZipFile(path) as z:
+                    buff = []
+                    for name in z.namelist():
+                        if name.lower().endswith('.xml'):
+                            try:
+                                xml = z.read(name).decode('utf-8', errors='ignore')
+                                # Remove tags and keep text
+                                xml = re.sub(r"<w:tab[^>]*/>", "\t", xml)
+                                xml = re.sub(r"<[^>]+>", " ", xml)
+                                buff.append(xml)
+                            except Exception:
+                                continue
+                    if buff:
+                        return _clean_text("\n".join(buff))
+        except Exception:
+            pass
+        # Try if the file is plain XML on disk (Office XML part saved as .doc)
+        try:
+            with open(path, 'rb') as f:
+                data = f.read()
+            txt = None
+            for enc in ('utf-8', 'utf-16', 'utf-16-le', 'utf-16-be', 'latin-1'):
+                try:
+                    txt = data.decode(enc)
+                    break
+                except Exception:
+                    continue
+            if not txt:
+                txt = data.decode('utf-8', errors='ignore')
+            # If it looks like XML-ish content, strip tags
+            sample = txt[:2000]
+            if ('<' in sample and '>' in sample) and (sample.count('<') >= 3):
+                xml = txt
+                xml = re.sub(r"<w:tab[^>]*/>", "\t", xml)
+                xml = re.sub(r"<[^>]+>", " ", xml)
+                return _clean_text(xml)
+        except Exception:
+            pass
+        # Try textract first
+        try:
+            import textract  # type: ignore
+            content = textract.process(path)
+            if isinstance(content, bytes):
+                return _clean_text(content.decode('utf-8', errors='ignore'))
+            return _clean_text(str(content))
+        except Exception:
+            pass
+        # Try antiword if installed
+        try:
+            import subprocess, shlex
+            cmd = f"antiword -m UTF-8 '{path}'"
+            result = subprocess.run(cmd, shell=True, capture_output=True)
+            out = result.stdout.decode('utf-8', errors='ignore')
+            if out and len(out) > 20:
+                return _clean_text(out)
+        except Exception:
+            pass
+        # Try catdoc if installed
+        try:
+            import subprocess
+            result = subprocess.run(["catdoc", path], capture_output=True)
+            out = result.stdout.decode('utf-8', errors='ignore')
+            if out and len(out) > 20:
+                return _clean_text(out)
+        except Exception:
+            pass
+        # Windows Word COM automation
+        try:
+            import tempfile
+            import pythoncom  # type: ignore
+            import win32com.client  # type: ignore
+            pythoncom.CoInitialize()
+            word = win32com.client.Dispatch('Word.Application')
+            word.Visible = False
+            doc = word.Documents.Open(path)
+            tmp_txt = tempfile.mktemp(suffix='.txt')
+            # 2 = wdFormatText
+            doc.SaveAs(tmp_txt, FileFormat=2)
+            doc.Close(False)
+            word.Quit()
+            with open(tmp_txt, 'r', encoding='utf-8', errors='ignore') as f:
+                return _clean_text(f.read())
+        except Exception:
+            pass
+        # Last-ditch: attempt to pull readable ASCII from binary
+        try:
+            with open(path, 'rb') as f:
+                data = f.read()
+            textish = []
+            cur = []
+            for b in data:
+                if 32 <= b <= 126 or b in (9, 10, 13):
+                    cur.append(chr(b))
+                else:
+                    if len(cur) >= 5:
+                        textish.append(''.join(cur))
+                    cur = []
+            if len(cur) >= 5:
+                textish.append(''.join(cur))
+            if textish:
+                return _clean_text('\n'.join(textish))
+        except Exception:
+            pass
+        return ""
+
     ext = os.path.splitext(resume_path)[1].lower()
+
+    # Fast path: plain text
     if ext == '.txt':
-        with open(resume_path, 'r', encoding='utf-8') as f:
-            return f.read()
+        try:
+            with open(resume_path, 'r', encoding='utf-8', errors='ignore') as f:
+                return _clean_text(f.read())
+        except Exception:
+            return ""
+
+    # 1) Primary: third-party parser (sereena_parser)
+    parsed_text = ""
     try:
-        # sereena_parser may raise SystemExit on missing deps; catch broadly
         from sereena_parser import ResumeParser  # type: ignore
         parser = ResumeParser()
         _, resume_data = parser.parse_single_resume(resume_path)
         if resume_data and hasattr(resume_data, 'raw_text'):
-            return resume_data.raw_text
+            parsed_text = _clean_text(getattr(resume_data, 'raw_text') or "")
     except BaseException:
-        # Fallback to built-in parsers if sereena_parser is unavailable or fails
-        pass
-    # Fallback: use PyMuPDF or doc/docx logic
+        parsed_text = ""
+
+    # If parser returned too little text, fall back to our robust extractors
+    MIN_LEN = 120
+    if parsed_text and len(parsed_text) >= MIN_LEN:
+        return parsed_text
+
+    # 2) Robust fallbacks by extension and content
     try:
         if ext == '.pdf':
-            import fitz
-            with fitz.open(resume_path) as doc:
-                # Support both PyMuPDF APIs across versions
-                pages_text = []
-                for page in doc:
-                    text_getter = getattr(page, "get_text", None)
-                    if callable(text_getter):
-                        try:
-                            pages_text.append(text_getter("text"))
-                        except TypeError:
-                            pages_text.append(text_getter())
-                    else:
-                        legacy_getter = getattr(page, "getText", None)
-                        if callable(legacy_getter):
-                            try:
-                                pages_text.append(legacy_getter("text"))
-                            except TypeError:
-                                pages_text.append(legacy_getter())
-                        else:
-                            pages_text.append("")
-                return "\n".join(pages_text)
-        elif ext == '.docx':
-            import docx
-            doc = docx.Document(resume_path)
-            return "\n".join([para.text for para in doc.paragraphs])
-        elif ext == '.doc':
-            # Try textract first if available
-            try:
-                import textract  # type: ignore
-                content = textract.process(resume_path)
-                if isinstance(content, bytes):
-                    return content.decode('utf-8', errors='ignore')
-                return str(content)
-            except Exception:
-                pass
-            # Windows-only fallback: use Word COM automation if available
-            try:
-                import tempfile
-                import pythoncom  # type: ignore
-                import win32com.client  # type: ignore
-                pythoncom.CoInitialize()
-                word = win32com.client.Dispatch('Word.Application')
-                word.Visible = False
-                doc = word.Documents.Open(resume_path)
-                tmp_txt = tempfile.mktemp(suffix='.txt')
-                # 2 = wdFormatText
-                doc.SaveAs(tmp_txt, FileFormat=2)
-                doc.Close(False)
-                word.Quit()
-                with open(tmp_txt, 'r', encoding='utf-8', errors='ignore') as f:
-                    return f.read()
-            except Exception:
-                pass
+            return _extract_pdf(resume_path)
+        if ext == '.docx' or _is_docx_container(resume_path):
+            return _extract_docx(resume_path)
+        if ext == '.doc':
+            return _extract_doc(resume_path)
+    except Exception:
+        pass
+
+    # 3) Last resort: try a generic read for any text content
+    try:
+        with open(resume_path, 'rb') as f:
+            data = f.read()
+        sample = data[:262144].decode('utf-8', errors='ignore')
+        # Heuristic: if there are lots of NULs it isn't clean text
+        if sample.count('\x00') < 10:
+            return _clean_text(sample)
     except Exception:
         pass
     return ""

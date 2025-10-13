@@ -180,6 +180,8 @@
     "boot": "boot",
     "spring boot": "spring boot",
     "angular": "angular",
-    "hibernate": "hibernate"
+    "hibernate": "hibernate",
+    "0.03": "0.03",
+    "junior": "junior"
   }
 }
