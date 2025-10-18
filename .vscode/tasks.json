@@ -85,5 +85,20 @@
 			],
 			"group": "build"
 		}
+		,
+		{
+			"label": "Start frontend (dev)",
+			"type": "shell",
+			"command": "powershell",
+			"args": [
+				"-NoProfile",
+				"-ExecutionPolicy",
+				"Bypass",
+				"-Command",
+				"Push-Location 'c:\\Users\\myind\\Downloads\\nlp linkedin\\frontend'; if (-Not (Test-Path '.env.development.local')) { \"REACT_APP_API_URL=http://localhost:8000/api/v1\" | Out-File -Encoding ascii .env.development.local }; if (-Not (Test-Path 'node_modules')) { npm install }; $env:REACT_APP_API_URL='http://localhost:8000/api/v1'; npm start; Pop-Location"
+			],
+			"group": "build",
+			"isBackground": true
+		}
 	]
 }

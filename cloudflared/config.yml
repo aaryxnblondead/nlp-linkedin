@@ -1,0 +1,10 @@
+tunnel: fc1afcef-eacb-448e-8f41-fc57dbd955ff
+credentials-file: C:\\Users\\myind\\.cloudflared\\fc1afcef-eacb-448e-8f41-fc57dbd955ff.json
+ingress:
+  - hostname: qualifyai.app
+    service: http://localhost:3000
+  - hostname: www.qualifyai.app
+    service: http://localhost:3000
+  - hostname: api.qualifyai.app
+    service: http://localhost:8000
+  - service: http_status:404

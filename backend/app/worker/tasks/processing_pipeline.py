@@ -61,6 +61,7 @@ def process_applicant_pipeline(applicant_id, resume_path, linkedin_url):
         except Exception:
             # Non-fatal; continue pipeline even if update fails
             db.rollback()
+
         # Step 4: Generate insights
         insights = generate_candidate_insights(structured_resume)
 
@@ -164,6 +165,41 @@ def process_applicant_pipeline(applicant_id, resume_path, linkedin_url):
                     combined_metas.extend([
                         {"source": getattr(app, 'resume_path', None), "applicant_id": applicant_id, "kind": "insights_summary"}
                         for _ in ic
+                    ])
+            except Exception:
+                pass
+
+            # 4) Applicant profile: ensure the corpus contains explicit name/email/rating/experience so the chatbot can list applicants
+            try:
+                sr_name = str((structured_resume or {}).get("name") or "").strip()
+                app_name = sr_name or (str(getattr(app, "name", "") or "").strip())
+                sr_email = str((structured_resume or {}).get("email") or "").strip()
+                app_email = sr_email or (str(getattr(app, "email", "") or "").strip())
+                rating_val = None
+                exp_val = None
+                try:
+                    rating_val = insights.get("rating") if isinstance(insights, dict) else None
+                    exp_val = insights.get("experience_years") if isinstance(insights, dict) else None
+                except Exception:
+                    pass
+                prof_parts = []
+                if app_name:
+                    prof_parts.append(f"Name: {app_name}")
+                if app_email:
+                    prof_parts.append(f"Email: {app_email}")
+                if rating_val is not None:
+                    prof_parts.append(f"Rating: {rating_val}")
+                if exp_val is not None:
+                    prof_parts.append(f"Experience: {exp_val} yrs")
+                if getattr(app, 'linkedin_url', None):
+                    prof_parts.append(f"LinkedIn: {getattr(app, 'linkedin_url')}")
+                profile_line = ("Applicant Profile | " + " | ".join(prof_parts)).strip()
+                if profile_line and profile_line != "Applicant Profile |":
+                    pc = chunk_texts([profile_line])
+                    combined_chunks.extend(pc)
+                    combined_metas.extend([
+                        {"source": getattr(app, 'resume_path', None), "applicant_id": applicant_id, "kind": "applicant_profile"}
+                        for _ in pc
                     ])
             except Exception:
                 pass

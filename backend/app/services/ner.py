@@ -129,19 +129,19 @@ JOB_TITLE_STOPWORDS = {
     "software engineer", "senior software engineer", "staff software engineer", "principal engineer",
     "team lead", "technical lead", "tech lead", "engineering manager", "project manager", "program manager",
     "data scientist", "data engineer", "ml engineer", "sde", "sdet", "qa engineer",
-    "di developer", "actimize ifm", "actimize", "infotech", "sas", "flat", "files", "UI", "web", "web dev",
+    "di developer", "actimize ifm", "actimize", "infotech", "sas", "flat", "files", "UI", "web", "web dev", " Project Manager", "Sr Java Developer", "Project Schedule", "Business System Analyst", 
 }
 
 # Degree words and tokens that should never be mistaken for names
 DEGREE_WORDS = {
     "degree", "bcom", "b.com", "bsc", "b.sc", "ba", "b.a", "be", "b.e", "btech", "b.tech",
-    "mcom", "m.com", "msc", "m.sc", "ma", "m.a", "me", "m.e", "mtech", "m.tech", "mba", "phd",
+    "mcom", "m.com", "msc", "m.sc", "ma", "m.a", "me", "m.e", "mtech", "m.tech", "mba", "phd", "ba", "bachelor", "master", "doctorate", "profile"
 }
 
 # Tokens that, if included, make a line implausible as a name
 NAME_TECH_NOISE = set([
     "linux", "red", "hat", "redhat", "spring", "hibernate", "jpa", "jsp", "servlet", "proc", "freq",
-    "sql", "python", "java", "django", "flask", "react", "node", "kubernetes", "aws", "azure", "gcp", "SAS", "Flat", "Files", "Infotech", 
+    "sql", "python", "java", "django", "flask", "react", "node", "kubernetes", "aws", "azure", "gcp", "SAS", "Flat", "Files", "Infotech", "cloud", "cloud watch", "java", "azure", "aws"
 ])
 
 DEGREE_PATTERNS = r"\b((b\.?s\.?|bsc|ba|be|b\.e\.|beng|b\.eng|bca|m\.?s\.?|msc|ma|me|m\.e\.|meng|m\.eng|mca|m\.?tech|mtech|b\.?tech|btech|ph\.?d\.?|phd|bachelor|master|doctorate)([^\n\r,)]{0,40})?)\b"

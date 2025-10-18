@@ -13,4 +13,15 @@ services:
     volumes:
       - ./uploaded_resumes:/app/uploaded_resumes
       - ./chroma_db:/app/chroma_db
+      - ./resumes:/app/resumes
     restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_URL: /api/v1
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
