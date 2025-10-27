@@ -25,6 +25,7 @@ from typing import List, Dict, Any, Optional, Tuple, Set
 import os
 import re
 import csv
+import json
 
 try:
     import spacy
@@ -91,6 +92,24 @@ SKILLS_DB = [
     "grpc", "rest", "graphQL", "graphql", "openapi", "swagger",
 ]
 
+# Normalize SKILLS_DB: remove exact duplicates while preserving order.
+# Matching elsewhere lower-cases items, so we use lower-casing to detect duplicates
+# but preserve the original token casing/format for display.
+_sk_seen = set()
+_sk_list = []
+for _sk in SKILLS_DB:
+    if not _sk:
+        continue
+    k = _sk.strip()
+    if not k:
+        continue
+    kl = k.lower()
+    if kl in _sk_seen:
+        continue
+    _sk_seen.add(kl)
+    _sk_list.append(k)
+SKILLS_DB = _sk_list
+
 TITLES_DB = [
     "software engineer", "senior software engineer", "staff software engineer", "principal engineer",
     "data scientist", "senior data scientist", "machine learning engineer", "ml engineer",
@@ -108,6 +127,22 @@ TITLES_DB = [
     # Infra/SRE variants
     "platform engineer", "infrastructure engineer",
 ]
+
+# Normalize TITLES_DB: remove exact duplicates while preserving order
+_t_seen = set()
+_t_list = []
+for _t in TITLES_DB:
+    if not _t:
+        continue
+    tt = _t.strip()
+    if not tt:
+        continue
+    tl = tt.lower()
+    if tl in _t_seen:
+        continue
+    _t_seen.add(tl)
+    _t_list.append(tt)
+TITLES_DB = _t_list
 
 # Post-filters to reduce false positives
 ORG_STOPWORDS = {
@@ -821,6 +856,159 @@ def dedupe_dict_list(items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     return out
 
 
+# ---- Local snippet classifier: spaCy -> NLTK -> heuristics -> optional LLM ----
+try:
+    import nltk  # type: ignore
+    from nltk import word_tokenize, pos_tag, ne_chunk  # type: ignore
+    _NLTK_AVAILABLE = True
+except Exception:
+    _NLTK_AVAILABLE = False
+
+
+def _spacy_classify_one(s: str) -> str | None:
+    """Use spaCy NER to classify a single snippet into one of our labels."""
+    nlp = _get_nlp()
+    if nlp is None or not s:
+        return None
+    try:
+        doc = nlp(s)
+        for ent in doc.ents:
+            lab = ent.label_
+            if lab == "ORG":
+                return "ORG"
+            if lab in ("GPE", "LOC"):
+                return "GPE"
+            if lab == "PERSON":
+                # PERSON probably isn't interesting here; prefer TITLE/ORG heuristics later
+                return None
+    except Exception:
+        return None
+    return None
+
+
+def _nltk_classify_one(s: str) -> str | None:
+    """Basic NLTK-based NE heuristics. Best-effort only."""
+    if not _NLTK_AVAILABLE or not s:
+        return None
+    try:
+        toks = word_tokenize(s)
+        tags = pos_tag(toks)
+        tree = ne_chunk(tags, binary=False)
+        for subtree in getattr(tree, 'subtrees', lambda: [])():
+            name = getattr(subtree, 'label', lambda: None)()
+            if not name:
+                continue
+            if name == 'GPE':
+                return 'GPE'
+            if name == 'ORGANIZATION' or name == 'ORGANISATION' or name == 'ORGANIZATION':
+                return 'ORG'
+    except Exception:
+        return None
+    return None
+
+
+def classify_snippets(snippets: List[str]) -> Dict[str, str]:
+    """Unified snippet classifier.
+
+    Strategy (best-effort):
+    1) Try spaCy entity labels (ORG/GPE)
+    2) Try NLTK NE chunking (if available)
+    3) Lightweight heuristics: match against skills/titles lists or keywords
+    4) If config USE_LLM_NER_ENRICH is enabled, send remaining unlabeled snippets to the LLM
+
+    Returns mapping {snippet: LABEL} for a subset of inputs.
+    """
+    out: Dict[str, str] = {}
+    if not snippets:
+        return out
+
+    # 0) quick uniq and cleanup
+    uniq = list(dict.fromkeys([s.strip() for s in snippets if s and s.strip()]))
+
+    # 1) spaCy first
+    for s in uniq:
+        lab = _spacy_classify_one(s)
+        if lab:
+            out[s] = lab
+
+    # 2) NLTK fallback for unlabeled
+    for s in uniq:
+        if s in out:
+            continue
+        lab = _nltk_classify_one(s)
+        if lab:
+            out[s] = lab
+
+    # 3) Heuristics: match against titles/skills or detect education tokens
+    skills_lower = {k.lower() for k in SKILLS_DB}
+    titles_lower = {t.lower() for t in TITLES_DB}
+    for s in uniq:
+        if s in out:
+            continue
+        sl = s.lower()
+        # Titles
+        for t in titles_lower:
+            if t and t in sl:
+                out[s] = 'TITLE'
+                break
+        if s in out:
+            continue
+        # Skills
+        for k in skills_lower:
+            if k and (k in sl or sl in k):
+                out[s] = 'SKILL'
+                break
+        if s in out:
+            continue
+        # Education cues
+        if re.search(INSTITUTION_HINT, s, re.IGNORECASE) or re.search(DEGREE_PATTERNS, s, re.IGNORECASE):
+            # Prefer EDU_DEGREE when degree-like, else ORG for institution hints
+            if re.search(DEGREE_PATTERNS, s, re.IGNORECASE):
+                out[s] = 'EDU_DEGREE'
+            else:
+                out[s] = 'ORG'
+
+    # 4) Optionally call LLM for rest (respect config flag and batch size)
+    remaining = [s for s in uniq if s not in out]
+    if remaining:
+        try:
+            from app.core import config
+            if not getattr(config, 'USE_LLM_NER_ENRICH', False):
+                return out
+            limit = int(getattr(config, 'NER_ENRICH_MAX_SNIPPETS', 40) or 40)
+            batch = remaining[:limit]
+        except Exception:
+            return out
+
+        try:
+            from app.services.generation import generate
+            # Build prompt inline similar to ner_ai_enrich
+            LABELS = ["SKILL","TITLE","ORG","GPE","EDU_DEGREE","EDU_FIELD"]
+            items = "\n".join(f"- {b}" for b in batch)
+            labels = ", ".join(LABELS)
+            prompt = (
+                "You are helping extract entities from resume text. For each line below, choose the best label from the set: " + labels + ".\n"
+                "Return a single compact JSON object where each key is the original line and each value is one of the labels above. If unsure, omit that line.\n\n"
+                f"Lines:\n{items}\n\nJSON:"
+            )
+            resp = generate(prompt, [])
+            if resp:
+                try:
+                    data = json.loads(resp)
+                    for k, v in data.items():
+                        ks = str(k).strip()
+                        vs = str(v).strip().upper()
+                        if ks and vs in LABELS:
+                            out[ks] = vs
+                except Exception:
+                    pass
+        except Exception:
+            # generation unavailable or failed -> skip
+            pass
+
+    return out
+
+
 def extract_resume_entities(text: str) -> Dict[str, Any]:
     text = text or ""
     nlp = _get_nlp()
@@ -945,7 +1133,6 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
                 chunks.append(s)
 
             if chunks:
-                from app.services.ner_ai_enrich import classify_snippets
                 ai_labels = classify_snippets(chunks)
                 if ai_labels:
                     new_skills: List[str] = []
