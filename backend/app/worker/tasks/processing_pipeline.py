@@ -224,8 +224,8 @@ def process_applicant_pipeline(applicant_id, resume_path, linkedin_url):
         # ----- Dynamic skills dictionary enrichment from insights ----
         try:
             skills = []
-            if structured_resume and isinstance(structured_resume.get("skills"), list):
-                skills.extend([normalize_skill(str(s)) for s in structured_resume.get("skills") if s])
+            skills_list = structured_resume.get("skills", []) if structured_resume else []
+            skills.extend([normalize_skill(str(s)) for s in skills_list if s])
             # From insights summary, extract rudimentary skill tokens (lowercase words that match known patterns)
             summ = str(insights.get("summary") or "").lower()
             tokens = [t.strip(",.;:()[]{}") for t in summ.split() if t and len(t) <= 30]
