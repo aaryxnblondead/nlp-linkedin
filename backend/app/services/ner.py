@@ -59,7 +59,7 @@ SKILLS_DB = [
     "docker", "kubernetes", "helm", "terraform", "ansible", "jenkins", "git", "github actions",
     "aws", "azure", "gcp", "cloudwatch", "lambda", "s3", "ec2",
     # OS / Platform
-    "linux", "red hat", "redhat", "red hat linux",
+    "linux", "red hat", "redhat", "red hat linux", "windows", "unix",
     # Other
     "spark", "hadoop", "airflow", "kafka", "snowflake", "databricks", "tableau", "power bi",
     # Cloud/data extras
@@ -79,7 +79,7 @@ SKILLS_DB = [
     # Data engineering extras
     "dbt", "airbyte", "fivetran", "delta lake", "iceberg", "hudi",
     # Frontend extras
-    "redux", "zustand", "vite", "webpack", "babel",
+    "redux", "zustand", "vite", "webpack", "babel", "html", "css", "html5", "css3",
     # Backend extras
     "spring", "spring boot", "hibernate", "asp.net", ".net core", "laravel", "symfony", "rails",
     # MLOps/Observability
@@ -87,9 +87,74 @@ SKILLS_DB = [
     # Messaging extras
     "nats", "mqtt",
     # Data/Stat tooling
-    "sas", "proc freq", "proc sql",
+    "sas", "proc freq", "proc sql", "sas/base", "sas/macro", "sas/sql", "sas/access", "sas/ods", "sas/stat", "sas/graph",
     # Misc
-    "grpc", "rest", "graphQL", "graphql", "openapi", "swagger",
+    "grpc", "rest", "graphql", "openapi", "swagger",
+    # Office/Productivity
+    "microsoft office", "ms office", "excel", "powerpoint", "word",
+    # Databases
+    "oracle", "ms sql server", "sql server", "teradata", "db2", "pl/sql",
+    # Data skills
+    "etl", "data extraction", "data transformation", "data loading", "data cleansing", "data warehousing",
+    # Web technologies
+    "jquery", "bootstrap", "wordpress",
+    # SAS specific
+    "sas 9.4", "sas fcm", "sas sna", "sas ecm", "sas aml", "sas va", "sas esp", "sas di studio", "sas smc", "sas workflow", "sas enterprise guide",
+    "sas administration", "sas admin",
+    # Java EE
+    "j2ee", "xml", "json", "soap", "rest", "struts",
+    # Application servers
+    "tomcat", "glassfish", "websphere", "apache tomcat",
+    # Design patterns
+    "mvc",
+    # IDEs and tools
+    "eclipse", "netbeans", "visual studio", "vs code", "jasper", "ireport",
+    # Reporting
+    "reporting", "jaspersoft",
+    # OS
+    "dbms", "os", "operating system",
+    # Storage & Backup - expanded significantly
+    "hp data protector", "data protector", "vmware", "hypervisor", "rman", "oracle rman", "san storage", "3par", "hpe 3par",
+    "backup", "backup management", "backup administration", "storage administration", "storage management",
+    "tape management", "media management", "disaster recovery", "backup policy", "retention policy",
+    "lun allocation", "san monitoring", "storage monitoring", "backup troubleshooting",
+    "mssql backup", "sql backup", "vmware backup", "hypervisor backup",
+    # SAS Administration - expanded
+    "sas server", "sas installation", "sas configuration", "odbc", "odbc connection",
+    "sas ssl", "ssl certification", "user profile management", "user management",
+    "sas service", "service management", "troubleshooting", "monitoring",
+    "report migration", "report deployment", "server deployment",
+    "helpdesk", "helpdesk support", "client support", "technical support",
+    "sla management", "sla prevention", "incident management",
+    # Relational databases
+    "relational database", "relational db",
+    # Misc tools
+    "ms-office", "typing", "service manager", "sm tool",
+    # Additional common skills from real-world resumes
+    "agile", "scrum", "kanban", "jira", "confluence", "slack", "teams",
+    "ci/cd", "gitlab", "bitbucket", "svn", "version control",
+    "microservices", "api design", "restful api", "web services",
+    "nginx", "apache", "iis", "load balancing",
+    "redis", "memcached", "caching", "session management",
+    "oauth", "jwt", "authentication", "authorization",
+    "unit testing", "integration testing", "test automation", "selenium",
+    "performance tuning", "optimization", "profiling", "debugging",
+    "code review", "documentation", "technical writing",
+    "bash", "shell scripting", "powershell", "batch scripting",
+    "vim", "emacs", "intellij", "pycharm",
+    "figma", "sketch", "adobe xd", "ui/ux design",
+    "photoshop", "illustrator", "graphic design",
+    "sap", "salesforce", "crm", "erp",
+    "blockchain", "ethereum", "solidity", "smart contracts",
+    "aws lambda", "aws s3", "aws ec2", "aws rds", "aws cloudformation",
+    "azure devops", "azure functions", "azure cosmos db",
+    "google cloud platform", "google compute engine", "google bigquery",
+    "data modeling", "data migration", "data integration",
+    "business intelligence", "data visualization", "dashboard creation",
+    "statistical analysis", "regression", "classification", "clustering",
+    "neural networks", "cnn", "rnn", "lstm", "transformer",
+    "model deployment", "model monitoring", "a/b testing",
+    "feature engineering", "data preprocessing", "data augmentation",
 ]
 
 # Normalize SKILLS_DB: remove exact duplicates while preserving order.
@@ -126,6 +191,14 @@ TITLES_DB = [
     "quality assurance engineer", "sdet", "software development engineer in test",
     # Infra/SRE variants
     "platform engineer", "infrastructure engineer",
+    # Additional common titles from the report
+    "graduate", "trainee", "associate", "senior associate",
+    "web developer", "web dev", "software developer", "associate software developer",
+    "sas developer", "sas admin", "storage administrator", "backup administrator",
+    "storage & backup administrator", "csa",
+    "team lead", "l1 team lead", "l1 admin", "l1 sas admin",
+    "helpdesk support", "senior helpdesk support",
+    "project engineer", "associate engineer",
 ]
 
 # Normalize TITLES_DB: remove exact duplicates while preserving order
@@ -547,7 +620,7 @@ def _extract_phone(text: str) -> Optional[str]:
     # Normalize: remove non-digits except leading + and extension
     ext_m = re.search(r"(x|ext\.?|#)\s*(\d{1,6})", phone, re.IGNORECASE)
     digits = re.sub(r"[^\d+]", "", phone)
-    if digits.startswith("+1") and len(digits) > 2:
+    if digits.startswith("+1" ) and len(digits) > 2:
         core = digits[2:]
     elif digits.startswith("+"):
         core = digits
@@ -572,6 +645,7 @@ def _extract_linkedin(text: str) -> Optional[str]:
 
 
 def _email_to_name(email: str) -> Optional[str]:
+    """Extract a potential name from email local-part as a last resort."""
     if not email or "@" not in email:
         return None
     local = email.split("@", 1)[0]
@@ -594,19 +668,21 @@ def _looks_like_bad_name(line: str) -> bool:
     ll = l.lower()
     if not l:
         return True
-        # Names should not contain underscores or obvious resume keywords
-        if "_" in l:
-            return True
-        if re.search(r"\b(cv|resume)\b", ll):
-            return True
-    if any(w in ll for w in NAME_HEADING_STOP):
+    # Names should not contain underscores or obvious resume keywords
+    if "_" in l:
         return True
-    if any(w in ll for w in JOB_TITLE_STOPWORDS):
+    if re.search(r"\b(cv|resume)\b", ll):
         return True
-    if any(w in ll for w in DEGREE_WORDS):
+    # Use word boundary matching for stopwords to avoid false positives
+    # (e.g., "Rahman" shouldn't match "ma" in DEGREE_WORDS)
+    if any(re.search(r'\b' + re.escape(w) + r'\b', ll) for w in NAME_HEADING_STOP):
+        return True
+    if any(re.search(r'\b' + re.escape(w) + r'\b', ll) for w in JOB_TITLE_STOPWORDS):
+        return True
+    if any(re.search(r'\b' + re.escape(w) + r'\b', ll) for w in DEGREE_WORDS):
         return True
     # Obvious technology tokens present → not a name
-    if any(tok in ll for tok in NAME_TECH_NOISE):
+    if any(re.search(r'\b' + re.escape(tok) + r'\b', ll) for tok in NAME_TECH_NOISE):
         return True
     # Single token or too many tokens
     words = [w for w in re.split(r"[^A-Za-z]+", l) if w]
@@ -626,34 +702,45 @@ def _looks_like_bad_name(line: str) -> bool:
 
 
 def _is_plausible_name(cand: str) -> bool:
+    """Enhanced name validation allowing for initials and multi-part names."""
     if not cand:
         return False
     c = _norm_ws(cand)
     if _looks_like_bad_name(c):
         return False
-    # Reject if contains degree words or tech noise explicitly
+    # Reject if contains degree words or tech noise explicitly (using word boundaries)
     cl = c.lower()
-    if any(w in cl for w in DEGREE_WORDS):
+    if any(re.search(r'\b' + re.escape(w) + r'\b', cl) for w in DEGREE_WORDS):
         return False
-    if any(w in cl for w in NAME_TECH_NOISE):
+    if any(re.search(r'\b' + re.escape(tok) + r'\b', cl) for tok in NAME_TECH_NOISE):
         return False
-    # Require 2-4 tokens with initial caps (allow small lowercase particles)
-    parts = [p for p in re.split(r"[^A-Za-z.'-]", c) if p]
-    if not (2 <= len(parts) <= 4):
+    # Split by spaces and punctuation but keep initials (single letter followed by optional period)
+    parts = [p for p in re.split(r"[^A-Za-z.'-]", c) if p and p != '.']
+    if not (2 <= len(parts) <= 6):  # Allow up to 6 parts for multi-name formats
         return False
     small = {"de","da","del","van","von","bin","al"}
     caps_ok = 0
+    initials_ok = 0
     for p in parts:
+        # Skip small particles
         if p.lower() in small:
             continue
+        # Check for initials (single uppercase letter, optionally followed by period)
+        if len(p) <= 2 and p[0].isupper() and (len(p) == 1 or p[1] == '.'):
+            initials_ok += 1
+            caps_ok += 1
+            continue
+        # Regular capitalized word
         if p[0].isupper():
             caps_ok += 1
+    # Require at least 2 capitalized parts (including initials)
     if caps_ok < 2:
         return False
     return True
 
 
 def _extract_name(doc, text: str) -> Optional[str]:
+    """Enhanced name extraction with better support for multi-part names and initials."""
     # 0) Look for explicit label: "Name: ..."
     for line in (text or "").splitlines()[:20]:
         m = re.search(r"(?i)\bname\s*[:\-]\s*([A-Za-z ,.'-]{3,80})", line)
@@ -662,10 +749,66 @@ def _extract_name(doc, text: str) -> Optional[str]:
             if not _looks_like_bad_name(cand):
                 return cand
 
+    # 1) Try email-based name extraction first for cases where name is missing from top
+    email = _extract_email(text)
+    email_name_candidate = None
+    if email:
+        email_name_candidate = _email_to_name(email)
+
+    # 2) Optional LLM-assisted name disambiguation (top-of-resume few lines)
+    try:
+        from app.core import config as _cfg
+        if getattr(_cfg, 'USE_LLM_NAME', False):
+            snippet = "\n".join((text or "").splitlines()[:15])
+            from app.services.generation import generate
+            prompt = (
+                "Extract the full name from this resume text. Return ONLY the name, nothing else.\n\n"
+                "Examples:\n"
+                "- 'Abdul Rahman Khan' → Abdul Rahman Khan\n"
+                "- 'Anne Mariya V V' → Anne Mariya V V\n"
+                "- 'Haidar. N. Mujawar' → Haidar N Mujawar\n\n"
+                "Resume text:\n" + snippet +
+                "\n\nFull name:"
+            )
+            ans = generate(prompt, [], max_new_tokens=32)
+            if ans:
+                # Take first non-empty line
+                ans = ans.strip().splitlines()[0].strip()
+                # Remove quotes if LLM wrapped the response
+                ans = ans.strip('"\'')
+                # Normalize: remove extra periods, collapse whitespace
+                ans = re.sub(r'\.+', '.', ans)  # Multiple periods → single period
+                ans = re.sub(r'\s*\.\s*', '. ', ans)  # Space around periods
+                ans = re.sub(r'\s+', ' ', ans).strip()  # Collapse whitespace
+                # Remove trailing/leading punctuation
+                ans = ans.strip('.,;:')
+                
+                # Debug logging
+                import logging
+                logging.info(f"LLM name candidate: '{ans}'")
+                logging.info(f"  - looks_like_bad_name: {_looks_like_bad_name(ans)}")
+                logging.info(f"  - length check: {3 <= len(ans) <= 80}")
+                tokens = [t for t in ans.split() if t and len(t) > 0]
+                logging.info(f"  - tokens: {tokens}, count: {len(tokens)}")
+                
+                if ans and not _looks_like_bad_name(ans) and 3 <= len(ans) <= 80:
+                    # Require at least 2 word-like tokens (including initials)
+                    if len(tokens) >= 2:
+                        logging.info(f"  - ACCEPTED: {ans}")
+                        return ans
+                    else:
+                        logging.warning(f"  - REJECTED: insufficient tokens ({len(tokens)} < 2)")
+                else:
+                    logging.warning(f"  - REJECTED: failed validation checks")
+    except Exception as e:
+        # Log error but continue with fallback methods
+        import logging
+        logging.warning(f"LLM name extraction failed: {e}")
+
     lines = (text or "").splitlines()
     first_block = "\n".join(lines[:15])
 
-    # 1) spaCy PERSON entity near top
+    # 3) spaCy PERSON entity near top
     if doc is not None:
         best = None
         for ent in doc.ents:
@@ -677,17 +820,42 @@ def _extract_name(doc, text: str) -> Optional[str]:
         if best:
             return best
 
-    # 2) Heuristic top lines
-    for line in lines[:8]:
+    # 4) Heuristic top lines - enhanced to handle initials and multi-part names
+    for line in lines[:10]:  # Check first 10 lines instead of 8
         if _looks_like_bad_name(line):
             continue
-        tokens = [t for t in re.split(r"[^A-Za-z'-]", line) if t]
-        if 2 <= len(tokens) <= 4 and sum(1 for t in tokens if t[:1].isupper()) >= max(2, len(tokens)-1):
-            cand = _norm_ws(line)
-            if 3 <= len(cand) <= 80 and not EMAIL_RE.search(cand) and _is_plausible_name(cand):
-                return cand
+        
+        # Clean up the line - remove extra whitespace and normalize periods after initials
+        cleaned = re.sub(r'([A-Z])\.\s*', r'\1. ', line)
+        cleaned = re.sub(r'\s+', ' ', cleaned).strip()
+        
+        # More flexible tokenization to preserve initials (e.g., "N.", "V.")
+        # Split by whitespace but preserve period-terminated initials
+        tokens = [t.strip() for t in cleaned.split() if t.strip()]
+        
+        # Check if this could be a name: 2-6 tokens, mostly capitalized or initials
+        if 2 <= len(tokens) <= 6:
+            cap_count = 0
+            initial_count = 0
+            
+            for t in tokens:
+                # Single letter or single letter with period = initial
+                if len(t) <= 2 and t[0].isupper() and (len(t) == 1 or t[1] in '.'):
+                    cap_count += 1
+                    initial_count += 1
+                # Regular capitalized word
+                elif t and t[0].isupper():
+                    cap_count += 1
+            
+            # Require at least 2 capitalized parts
+            if cap_count >= 2:
+                cand = _norm_ws(cleaned)
+                if 3 <= len(cand) <= 80 and not EMAIL_RE.search(cand) and _is_plausible_name(cand):
+                    return cand
 
-    # Note: Do not derive name from email local-part; restrict to resume text entities/lines only.
+    # 5) Fallback: Use email-based name if we have one and nothing else worked
+    if email_name_candidate and _is_plausible_name(email_name_candidate):
+        return email_name_candidate
 
     return None
 
@@ -722,21 +890,55 @@ def _collect_sections(text: str) -> Dict[str, str]:
 
 
 def _extract_skills(doc, text: str, sections: Dict[str, str]) -> List[str]:
+    """Enhanced skills extraction with better filtering of false positives."""
     found = set()
+    
     # PhraseMatcher across whole doc
     for s in _phrase_matches(_SKILL_MATCHER, doc):
         found.add(s.lower())
+    
     # Heuristic: skills section comma/pipe-separated
-    skills_text = sections.get("skills") or ""
+    skills_text = sections.get("skills") or sections.get("skill") or ""
     if skills_text:
         for tok in re.split(r"[,|\u2022\n]+", skills_text.lower()):
             t = tok.strip(r" :\-•\t")
-            if not t:
+            if not t or len(t) < 2:
                 continue
-            if any(t == k or t in k or k in t for k in [k.lower() for k in SKILLS_DB]):
+            # More strict matching - must be exact or very close match
+            if t in [k.lower() for k in SKILLS_DB]:
                 found.add(t)
+            else:
+                # Check for fuzzy matches but be more conservative
+                for k in SKILLS_DB:
+                    kl = k.lower()
+                    # Exact substring match where the skill is a complete word
+                    if re.search(r'\b' + re.escape(kl) + r'\b', t):
+                        found.add(kl)
+                        break
+    
+    # Filter out common false positives
+    noise_patterns = [
+        r'^(active|participated?|awards?|achievements?|certificates?|courses?|interests?|won|associate)$',
+        r'(participation|tournament|hackathon|workshop|professional|proﬁciency)',
+        r'^(listening|music|cricket|basketball)$',
+        r'(specialist|architect|associate|engineer|developer|analyst|lead|manager)$',
+        r'^(full|complete|total|basic|advanced|intermediate)$',
+        r'(completed|from|with|degree|diploma|board|state|technical|education)',
+    ]
+    
+    filtered = set()
+    for skill in found:
+        # Skip if it matches noise patterns
+        is_noise = False
+        for pattern in noise_patterns:
+            if re.search(pattern, skill, re.IGNORECASE):
+                is_noise = True
+                break
+        if not is_noise and len(skill) >= 2:
+            filtered.add(skill)
+    
     # Return sorted unique
-    return sorted(found)
+    return sorted(filtered)
 
 
 def _extract_education(doc, text: str) -> List[Dict[str, Any]]:
@@ -1020,24 +1222,7 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
     linkedin = _extract_linkedin(text)
     # First pass name via rules/spaCy
     name = _extract_name(doc, text)
-    # Optional LLM-assisted name disambiguation (top-of-resume few lines)
-    try:
-        from app.core import config as _cfg
-        if not name and getattr(_cfg, 'USE_LLM_NAME', False):
-            snippet = "\n".join((text or "").splitlines()[:15])
-            from app.services.generation import generate
-            prompt = (
-                "Extract the candidate's full name (only the name) from the following resume snippet. "
-                "If ambiguous or missing, return an empty string.\n\nSnippet:\n" + snippet +
-                "\n\nName:"
-            )
-            ans = generate(prompt, [])
-            ans = (ans or "").strip().splitlines()[0].strip()
-            if ans and not _looks_like_bad_name(ans):
-                name = ans
-    except Exception:
-        pass
-
+    
     skills = _extract_skills(doc, text, sections)
     # Normalize skills using dynamic mapping; optionally enrich with LLM
     try:
@@ -1053,6 +1238,32 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
     except Exception:
         pass
 
+    education = _extract_education(doc, text)
+    experience = _extract_experience(doc, text)
+
+    # Optional Stage 2: AI-assisted enrichment for experience
+    try:
+        from app.core import config as _cfg
+        if getattr(_cfg, 'USE_LLM_SKILLS_ENRICH', False):
+            # If experience is empty, try to use LLM to extract it
+            if not experience:
+                snippet = "\n".join((text or "").splitlines())
+                from app.services.generation import generate
+                prompt = (
+                    "Extract the candidate's work experience from the following resume snippet. "
+                    "Return a list of JSON objects, where each object has 'title', 'company', 'location', 'start', 'end', and 'snippet' keys. "
+                    "If ambiguous or missing, return an empty list.\n\nSnippet:\n" + snippet +
+                    "\n\nExperience:"
+                )
+                ans = generate(prompt, [])
+                if ans:
+                    try:
+                        experience = json.loads(ans)
+                    except json.JSONDecodeError:
+                        pass  # Ignore if the response is not valid JSON
+    except Exception:
+        pass
+
     # Entities for locations/orgs/titles/dates
     locations: List[str] = []
     organizations: List[str] = []
@@ -1065,9 +1276,6 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
                 organizations.append(ent.text)
         titles.extend(_phrase_matches(_TITLE_MATCHER, doc))
     dates = [m.group(0) for m in DATE_RANGE_RE.finditer(text)]
-
-    education = _extract_education(doc, text)
-    experience = _extract_experience(doc, text)
 
     # Post-filter organizations/locations against skills and stopwords
     skills_lower = {s.lower() for s in skills}
@@ -1111,26 +1319,36 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
 
             # heuristically pick phrases separated by commas/pipes/bullets/newlines
             chunks: List[str] = []
-            for raw in re.split(r"[\n\r\t\|,•\u2022]+", text):
-                s = _norm(raw)
-                if not s or len(s) < 2 or len(s) > 80:
-                    continue
-                sl = s.lower()
-                if sl in known:
-                    continue
-                if EMAIL_RE.search(s) or LINKEDIN_RE.search(s) or ALT_PHONE_RE.search(s):
-                    continue
-                # avoid obvious headers
-                if sl in {"summary","skills","experience","education","projects","certifications","objective","profile"}:
-                    continue
-                # skip lines that are mostly punctuation or numeric
-                if not re.search(r"[A-Za-z]", s):
-                    continue
-                # lightly favor capitalized phrases or multi-word tokens
-                tokens = [t for t in re.split(r"[^A-Za-z0-9+#.&/-]+", s) if t]
-                if len(tokens) == 1 and not tokens[0][0].isupper():
-                    continue
-                chunks.append(s)
+            for raw in re.split(r"[\n\r\t]+", text):
+                # Process line by line first
+                line_chunks = re.split(r"[,|\u2022\u2022]+", raw)
+                for chunk in line_chunks:
+                    s = _norm(chunk)
+                    if not s or len(s) < 2 or len(s) > 80:
+                        continue
+                    sl = s.lower()
+                    if sl in known:
+                        continue
+                    if EMAIL_RE.search(s) or LINKEDIN_RE.search(s) or ALT_PHONE_RE.search(s):
+                        continue
+                    # avoid obvious headers
+                    if sl in {"summary","skills","experience","education","projects","certifications","objective","profile"}:
+                        continue
+                    # skip lines that are mostly punctuation or numeric
+                    if not re.search(r"[A-Za-z]", s):
+                        continue
+                    # Must contain at least one known skill/title keyword or be mostly capitalized to be a candidate
+                    is_candidate = False
+                    if any(skill in sl for skill in SKILLS_DB) or any(title in sl for title in TITLES_DB):
+                        is_candidate = True
+                    
+                    if not is_candidate:
+                        words = s.split()
+                        if len(words) > 1 and sum(1 for w in words if w.isupper() or (w[0].isupper() and w[1:].islower())) > len(words) / 2:
+                            is_candidate = True
+
+                    if is_candidate:
+                        chunks.append(s)
 
             if chunks:
                 ai_labels = classify_snippets(chunks)

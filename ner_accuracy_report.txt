@@ -1,0 +1,88 @@
+---=== AGGREGATE NER ACCURACY REPORT ===---
+
+Total Name Accuracy: 80.00% (4/5)
+
+Total Email Accuracy: 100.00% (5/5)
+
+Average Skills Metrics:
+  - Precision: 0.51
+  - Recall:    0.49
+  - F1-Score:  0.48
+
+Average Titles Metrics:
+  - Precision: 0.52
+  - Recall:    0.85
+  - F1-Score:  0.64
+
+
+---=== DETAILED PER-RESUME LOG ===---
+
+---=== aamir resume latest.docx ===---
+Name Accuracy: PASS
+  - Truth: aamir arshad shaikh
+  - Pred:  aamir arshad shaikh
+Email Accuracy: PASS
+  - Truth: aamirshaikh26716@gmail.com
+  - Pred:  aamirshaikh26716@gmail.com
+Skills Metrics: P=0.00, R=0.00, F1=0.00
+  - Truth: ['Operation management of Backup (HP Data Protector)', 'HPE 3Par Storage', 'SAN Storage monitoring (Physical / Logical)', 'SAN Storage L1 task (LUN allocation, log collection & uploading)', 'SAN Storage devices logs, errors monitoring & call logging with HP TS', 'DC-NDR RCIP log replication monitoring', 'Daily health check reports, checklist & documentation', 'HP Data Protector backup software management', 'Backup policy creation, configuration & scheduling in HP Data Protector', 'Backup configuration on Oracle RMAN, SQL & VMware/Hypervisor images', 'Tape/media management', 'Retention policy & offsite process', 'Backup firing, troubleshooting, monitoring & maintenance', 'Oracle RMAN & MSSQL online backup restoration on test server', 'HP Data Protector IDB maintenance, purging & maintenance', 'System performance, response time', 'Identify & report hardware problems', 'Call logging & Change raise in HP SM with POA', 'Backup policy creation & fire the backup', 'MS-CIT']
+  - Pred:  ['san storage', 'backup', 'retention policy', 'data protector', 'documentation', 'hpe 3par', 'hypervisor', 'lun allocation', 'media management', 'monitoring', 'oracle', 'oracle rman', 'sql', 'troubleshooting', 'vmware']
+Titles Metrics: P=0.67, R=1.00, F1=0.80
+  - Truth: ['CSA', 'Storage & Backup Administrator']
+  - Pred:  ['Backup Administrator', 'CSA', 'Storage & Backup Administrator']
+
+---=== Abdul Rahman.Khan_CV.pdf ===---
+Name Accuracy: PASS
+  - Truth: abdul rahman khan
+  - Pred:  abdul rahman khan
+Email Accuracy: PASS
+  - Truth: abdulrahmankhan092@gmail.com
+  - Pred:  abdulrahmankhan092@gmail.com
+Skills Metrics: P=0.58, R=0.24, F1=0.34
+  - Truth: ['SAS administration L1', 'SAS server installation and configuration', 'ODBC connection', 'SAS', 'Teradata Database', 'SAS SSL certification', 'manage user profile at SAS', 'troubleshoot client level issue', 'identify critical alerts', 'Install client’s depots and configured', 'licensing activity', 'report Migration', 'Helpdesk Support team monitoring', 'preventing SLA breach', 'Investigate memory consumption file', 'SAS Admin L1 Technologies', 'Deployed SAS application on UAT and production server', 'support team in SAS', 'MF_SM', 'SQL', 'Relational DB', 'unix', 'Team Lead', 'Client troubleshot on SAS application', 'user management', 'SAS service start-stop-restart', 'Reporting', 'report deployment', 'Server depot deployment', 'Reviewed logs to find the defect on client level SAS application', 'Reviewed service manager tool and reported the bugs at user level', 'SSL certification at client application', 'SAS Server Services rebooted', 'End to End support for the testing activities during System Testing and UAT on both SAS & Service manager tool', 'Production support for the SAS application', 'handling of critical issues', 'Helpdesk Support', 'SM tool testing', 'Server report Fetching', 'taking client requirement', 'KT to everyone for SM', 'Linux', 'Basic Ms-Office', 'Day-to-Day computer issue', 'typing']
+  - Pred:  ['helpdesk', 'helpdesk support', 'linux', 'monitoring', 'odbc', 'odbc connection', 'operating system', 'sql', 'report deployment', 'report migration', 'reporting', 'sas', 'sm tool', 'ssl', 'teams', 'teradata', 'typing', 'unix', 'user management']
+Titles Metrics: P=0.38, R=0.75, F1=0.50
+  - Truth: ['L1 team lead for Support', 'L1 SAS Admin', 'Senior Helpdesk Support', 'Senior Associate']
+  - Pred:  ['Associate', 'Helpdesk Support', 'L1 SAS Admin', 'L1 team lead', 'SAS Admin', 'Senior Associate', 'Senior Helpdesk Support', 'team lead']
+
+---=== Aditya Arya_CV.pdf ===---
+Name Accuracy: PASS
+  - Truth: aditya arya
+  - Pred:  aditya arya
+Email Accuracy: PASS
+  - Truth: aryaaditya1308@gmail.com
+  - Pred:  aryaaditya1308@gmail.com
+Skills Metrics: P=0.36, R=0.45, F1=0.40
+  - Truth: ['c', 'c++', 'Core Java', 'OS', 'DBMS', 'Microsoft Oﬀce', 'Powerpoint', 'Windows 7/X', 'Unix', 'Sql', 'Linux']
+  - Pred:  ['apache', 'c++', 'postgresql', 'documentation', 'express', 'java', 'linux', 'oracle', 'operating system', 'powerpoint', 'sql', 'apache tomcat', 'unix', 'microsoft windows']
+Titles Metrics: P=0.75, R=1.00, F1=0.86
+  - Truth: ['Graduate', 'Trainee', 'Software Engineer']
+  - Pred:  ['Associate', 'Graduate', 'Software Engineer', 'Trainee']
+
+---=== Anne Mariya_CV.pdf ===---
+Name Accuracy: PASS
+  - Truth: anne mariya v v
+  - Pred:  anne mariya v v
+Email Accuracy: PASS
+  - Truth: anemariya@gmail.com
+  - Pred:  anemariya@gmail.com
+Skills Metrics: P=0.69, R=0.76, F1=0.72
+  - Truth: ['SAS 9.4', 'SAS/BASE', 'SAS/MACRO', 'SAS/SQL', 'SAS/ACCESS', 'SAS/ODS', 'SAS/STAT', 'SAS/GRAPH', 'Oracle', 'MS SQL Server', 'SQL', 'Windows', 'UNIX', 'SAS FCM', 'SAS SNA', 'SAS ECM', 'SAS AML', 'SAS VA', 'SAS ESP', 'SAS DI Studio', 'SAS SMC', 'SAS Workflow', 'SAS ENTERPRISE GUIDE', 'JAVA', 'J2EE', 'JSP', 'CSS', 'HTML', 'JavaScript', 'Servlet', 'XML', 'JSON', 'Spring Framework 3.0.5', 'Struts', 'SOAP', 'REST', 'MYSQL 5.5', 'PL/SQL', 'Glassfish 2.0', 'Tomcat 6.0', 'Websphere', 'MVC', 'Net Beans 7.0', 'Eclipse', 'Jasper Soft (iReport3)', 'SQLyog', 'SQL*plus', 'Firebug', 'SQL Management Studio 2008', 'Bugzilla']
+  - Pred:  ['css', 'data cleansing', 'data extraction', 'data integration', 'eclipse', 'etl', 'excel', 'glassfish', 'html', 'j2ee', 'jasper', 'java', 'javascript', 'json', 'jsp', 'monitoring', 'ms sql server', 'mvc', 'mysql', 'operating system', 'oracle', 'pl/sql', 'reporting', 'rest', 'sas', 'sas 9.4', 'sas aml', 'sas di studio', 'sas ecm', 'sas enterprise guide', 'sas esp', 'sas fcm', 'sas smc', 'sas sna', 'sas va', 'sas workflow', 'sas/access', 'sas/base', 'sas/graph', 'sas/macro', 'sas/ods', 'sas/sql', 'sas/stat', 'servlet', 'soap', 'spring', 'sql', 'sql server', 'struts', 'apache tomcat', 'unix', 'web services', 'websphere', 'microsoft windows', 'xml']
+Titles Metrics: P=0.20, R=0.50, F1=0.29
+  - Truth: ['Technical Lead', 'SAS Developer']
+  - Pred:  ['Associate', 'Associate Engineer', 'Project Engineer', 'SAS Developer', 'analyst']
+
+---=== Haidar Mujawar-CV.docx ===---
+Name Accuracy: FAIL
+  - Truth: haidar. n. mujawar
+  - Pred:  haidar n mujawar
+Email Accuracy: PASS
+  - Truth: haidar.h29@gmail.com
+  - Pred:  haidar.h29@gmail.com
+Skills Metrics: P=0.90, R=1.00, F1=0.95
+  - Truth: ['MySql', 'SQL', 'HTML', 'CSS', 'JavaScript', 'PHP', 'Wordpress', 'Bootstrap', 'jQuery']
+  - Pred:  ['bootstrap', 'css', 'html', 'javascript', 'jquery', 'monitoring', 'mysql', 'php', 'sql', 'wordpress']
+Titles Metrics: P=0.60, R=1.00, F1=0.75
+  - Truth: ['Intern', 'Web developer', 'Associate software developer']
+  - Pred:  ['Associate', 'Associate software developer', 'Intern', 'Web developer', 'software developer']

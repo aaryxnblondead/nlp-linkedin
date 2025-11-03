@@ -1,6 +1,6 @@
 from typing import List, Optional
 from langchain_community.vectorstores import Chroma
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from pydantic import SecretStr
 from app.core import config
 import os

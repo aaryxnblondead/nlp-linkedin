@@ -182,6 +182,21 @@
     "angular": "angular",
     "hibernate": "hibernate",
     "0.03": "0.03",
-    "junior": "junior"
+    "junior": "junior",
+    "3par": "san storage",
+    "hp data protector": "data protector",
+    "os": "operating system",
+    "dbms": "postgresql",
+    "tomcat": "apache tomcat",
+    "windows": "microsoft windows",
+    "html5": "html",
+    "rman": "oracle rman",
+    "backup policy": "retention policy",
+    "sas admin": "sas",
+    "sas administration": "sas",
+    "sas server": "sas",
+    "relational db": "sql",
+    "sas ssl": "sas",
+    "ssl certification": "ssl"
   }
 }

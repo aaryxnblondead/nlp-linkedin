@@ -35,7 +35,7 @@ CHAT_GROUNDED_ONLY = os.getenv("CHAT_GROUNDED_ONLY", "true").lower() == "true"
 GENERATOR_MODEL_ID = os.getenv("GEMMA_MODEL_ID", os.getenv("GENERATOR_MODEL_ID", "google/gemma-2-2b-it"))
 
 # NLP/NER/LLM assist flags
-USE_LLM_NAME = os.getenv("USE_LLM_NAME", "false").lower() == "true"
+USE_LLM_NAME = os.getenv("USE_LLM_NAME", "true").lower() == "true"  # Enable LLM for name extraction
 USE_LLM_SKILLS_ENRICH = os.getenv("USE_LLM_SKILLS_ENRICH", "false").lower() == "true"
 USE_LLM_SCORING = os.getenv("USE_LLM_SCORING", "false").lower() == "true"
 USE_LLM_NER_ENRICH = os.getenv("USE_LLM_NER_ENRICH", "false").lower() == "true"
