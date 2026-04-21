@@ -4,7 +4,7 @@ extend-exclude = [
   "frontend",
   "frontend/node_modules",
   "**/__pycache__/**",
-  "migrations",
+  "backend/migrations",
   "bases",
   "backend/scripts",
   "backend/tests",
@@ -25,4 +25,4 @@ warn_redundant_casts = true
 warn_unused_configs = true
 ignore_missing_imports = true
 # Regex of files/dirs to exclude from mypy (non-essential or third-party code)
-exclude = "(^frontend/|__pycache__|^migrations/|^bases/|^backend/scripts/|^backend/tests/)"
+exclude = "(^frontend/|__pycache__|^backend/migrations/|^bases/|^backend/scripts/|^backend/tests/)"

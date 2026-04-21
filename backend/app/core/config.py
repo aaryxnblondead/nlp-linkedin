@@ -2,6 +2,24 @@ import os
 
 APP_ENV = os.getenv("APP_ENV", "development").strip().lower()
 IS_PRODUCTION = APP_ENV in {"prod", "production"}
+BACKEND_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+
+
+def _resolve_backend_path(env_value: str | None, default_rel: str) -> str:
+    """Resolve relative paths against backend root and normalize legacy prefixes."""
+    raw = (env_value or default_rel or "").strip()
+    if not raw:
+        raw = default_rel
+    if os.path.isabs(raw):
+        return raw
+
+    normalized = raw.replace("\\", "/")
+    if normalized.startswith("./"):
+        normalized = normalized[2:]
+    # Backward compatibility for old values like "backend/data/skills_dynamic.json"
+    if normalized.startswith("backend/"):
+        normalized = normalized[len("backend/"):]
+    return os.path.join(BACKEND_ROOT, normalized)
 
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "12345678")
@@ -34,7 +52,7 @@ SCRAPER_ENGINE = os.getenv("SCRAPER_ENGINE", "selenium")  # or "playwright"
 USE_LINKEDIN_SCRAPE = os.getenv("USE_LINKEDIN_SCRAPE", "false").lower() == "true"
 
 # ChromaDB configuration
-CHROMA_DIR = os.getenv("CHROMA_DIR", "chroma_db")
+CHROMA_DIR = _resolve_backend_path(os.getenv("CHROMA_DIR"), "chroma_db")
 
 # Text generation (Gemma/LLM) configuration — default ON to favor LLM answers
 USE_GENERATOR = os.getenv("USE_GENERATOR", "true").lower() == "true"
@@ -51,7 +69,10 @@ USE_LLM_SCORING = os.getenv("USE_LLM_SCORING", "false").lower() == "true"
 USE_LLM_NER_ENRICH = os.getenv("USE_LLM_NER_ENRICH", "false").lower() == "true"
 
 # Dynamic skills dictionary path
-SKILLS_DYNAMIC_PATH = os.getenv("SKILLS_DYNAMIC_PATH", os.path.join("backend", "data", "skills_dynamic.json"))
+SKILLS_DYNAMIC_PATH = _resolve_backend_path(
+    os.getenv("SKILLS_DYNAMIC_PATH"),
+    os.path.join("data", "skills_dynamic.json"),
+)
 
 # Optional: default NER enrichment labels and limits
 NER_ENRICH_MAX_SNIPPETS = int(os.getenv("NER_ENRICH_MAX_SNIPPETS", "40"))

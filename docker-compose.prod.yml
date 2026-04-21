@@ -62,7 +62,7 @@ services:
       USE_LLM_NAME: ${USE_LLM_NAME:-true}
       USE_LLM_SKILLS_ENRICH: ${USE_LLM_SKILLS_ENRICH:-true}
       USE_LLM_SCORING: ${USE_LLM_SCORING:-true}
-      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH:-backend/data/skills_dynamic.json}
+      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH:-data/skills_dynamic.json}
       CHROMA_DIR: ${CHROMA_DIR:-chroma_db}
       FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost}
       EXTRA_CORS_ORIGINS: ${EXTRA_CORS_ORIGINS:-}
@@ -111,7 +111,7 @@ services:
       HF_MODEL_ID: ${HF_MODEL_ID:-google/gemma-2-2b-it}
       USE_GENERATOR: ${USE_GENERATOR:-true}
       CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY:-true}
-      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH:-backend/data/skills_dynamic.json}
+      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH:-data/skills_dynamic.json}
       CHROMA_DIR: ${CHROMA_DIR:-chroma_db}
     depends_on:
       backend:
