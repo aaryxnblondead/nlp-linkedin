@@ -1,0 +1,13 @@
+# Dependencies and build outputs
+node_modules/
+build/
+
+# Local env
+.env
+.env.*
+
+# VCS/editor noise
+.git/
+.gitignore
+.DS_Store
+Thumbs.db

@@ -45,6 +45,24 @@ _INSTITUTION_CANONICAL: Dict[str, str] = {}
 _INSTITUTION_PREFIX_INDEX: Dict[str, List[str]] = {}
 
 
+def _dedupe_case_insensitive(items: List[str]) -> List[str]:
+    """Remove empty items and dedupe while preserving insertion order."""
+    seen: Set[str] = set()
+    out: List[str] = []
+    for item in items:
+        if not item:
+            continue
+        token = item.strip()
+        if not token:
+            continue
+        key = token.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(token)
+    return out
+
+
 SKILLS_DB = [
     # Programming languages
     "python", "java", "c", "c++", "c#", "go", "golang", "rust", "ruby", "php", "scala", "kotlin",
@@ -157,23 +175,7 @@ SKILLS_DB = [
     "feature engineering", "data preprocessing", "data augmentation",
 ]
 
-# Normalize SKILLS_DB: remove exact duplicates while preserving order.
-# Matching elsewhere lower-cases items, so we use lower-casing to detect duplicates
-# but preserve the original token casing/format for display.
-_sk_seen = set()
-_sk_list = []
-for _sk in SKILLS_DB:
-    if not _sk:
-        continue
-    k = _sk.strip()
-    if not k:
-        continue
-    kl = k.lower()
-    if kl in _sk_seen:
-        continue
-    _sk_seen.add(kl)
-    _sk_list.append(k)
-SKILLS_DB = _sk_list
+SKILLS_DB = _dedupe_case_insensitive(SKILLS_DB)
 
 TITLES_DB = [
     "software engineer", "senior software engineer", "staff software engineer", "principal engineer",
@@ -201,21 +203,9 @@ TITLES_DB = [
     "project engineer", "associate engineer",
 ]
 
-# Normalize TITLES_DB: remove exact duplicates while preserving order
-_t_seen = set()
-_t_list = []
-for _t in TITLES_DB:
-    if not _t:
-        continue
-    tt = _t.strip()
-    if not tt:
-        continue
-    tl = tt.lower()
-    if tl in _t_seen:
-        continue
-    _t_seen.add(tl)
-    _t_list.append(tt)
-TITLES_DB = _t_list
+TITLES_DB = _dedupe_case_insensitive(TITLES_DB)
+_SKILLS_DB_LOWER = {s.lower() for s in SKILLS_DB}
+_TITLES_DB_LOWER = {t.lower() for t in TITLES_DB}
 
 # Post-filters to reduce false positives
 ORG_STOPWORDS = {
@@ -550,6 +540,45 @@ def _get_nlp():
 
 def _norm_ws(text: str) -> str:
     return re.sub(r"\s+", " ", text or " ").strip()
+
+
+def _normalize_entity_token(s: str) -> str:
+    return _norm_ws(s).strip(",;:")
+
+
+def _clean_entity_list(items: List[str], stop: Set[str], skills_lower: Set[str]) -> List[str]:
+    cleaned: List[str] = []
+    seen: Set[str] = set()
+    for it in items:
+        token = _normalize_entity_token(it)
+        token_l = token.lower()
+        if not token:
+            continue
+        if token_l in skills_lower:
+            continue
+        if any(token_l == k or token_l in k or k in token_l for k in _SKILLS_DB_LOWER):
+            continue
+        if token_l in stop:
+            continue
+        if token_l in seen:
+            continue
+        seen.add(token_l)
+        cleaned.append(token)
+    return cleaned
+
+
+def _merge_unique(dst: List[str], src: List[str]) -> List[str]:
+    seen = {str(d).lower() for d in dst}
+    for it in src:
+        token = _normalize_entity_token(it)
+        token_l = token.lower()
+        if not token:
+            continue
+        if token_l in seen:
+            continue
+        seen.add(token_l)
+        dst.append(token)
+    return dst
 
 
 EMAIL_RE = re.compile(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b")
@@ -1142,21 +1171,19 @@ def classify_snippets(snippets: List[str]) -> Dict[str, str]:
             out[s] = lab
 
     # 3) Heuristics: match against titles/skills or detect education tokens
-    skills_lower = {k.lower() for k in SKILLS_DB}
-    titles_lower = {t.lower() for t in TITLES_DB}
     for s in uniq:
         if s in out:
             continue
         sl = s.lower()
         # Titles
-        for t in titles_lower:
+        for t in _TITLES_DB_LOWER:
             if t and t in sl:
                 out[s] = 'TITLE'
                 break
         if s in out:
             continue
         # Skills
-        for k in skills_lower:
+        for k in _SKILLS_DB_LOWER:
             if k and (k in sl or sl in k):
                 out[s] = 'SKILL'
                 break
@@ -1279,37 +1306,14 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
 
     # Post-filter organizations/locations against skills and stopwords
     skills_lower = {s.lower() for s in skills}
-    def _clean_list(items: List[str], stop: set[str]) -> List[str]:
-        cleaned = []
-        seen = set()
-        for it in items:
-            t = _norm_ws(it).strip(",;:")
-            tl = t.lower()
-            if not t:
-                continue
-            if tl in skills_lower:
-                continue
-            if any(tl == k or tl in k or k in tl for k in (k.lower() for k in SKILLS_DB)):
-                continue
-            if tl in stop:
-                continue
-            if t.lower() in seen:
-                continue
-            seen.add(t.lower())
-            cleaned.append(t)
-        return cleaned
-
-    organizations = _clean_list(organizations, ORG_STOPWORDS)
-    locations = _clean_list(locations, LOC_STOPWORDS)
+    organizations = _clean_entity_list(organizations, ORG_STOPWORDS, skills_lower)
+    locations = _clean_entity_list(locations, LOC_STOPWORDS, skills_lower)
 
     # Optional Stage 2: AI-assisted enrichment for unrecognized text snippets
     try:
         from app.core import config as _cfg
         if getattr(_cfg, 'USE_LLM_NER_ENRICH', False):
             # Collect candidate snippets not already recognized
-            def _norm(s: str) -> str:
-                return _norm_ws(s).strip(',;:')
-
             known = set([s.lower() for s in skills]) | set([t.lower() for t in titles]) | set([o.lower() for o in organizations]) | set([l.lower() for l in locations])
             for e in education:
                 for k in ("degree", "field", "institution"):
@@ -1321,9 +1325,9 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
             chunks: List[str] = []
             for raw in re.split(r"[\n\r\t]+", text):
                 # Process line by line first
-                line_chunks = re.split(r"[,|\u2022\u2022]+", raw)
+                line_chunks = re.split(r"[,|\u2022]+", raw)
                 for chunk in line_chunks:
-                    s = _norm(chunk)
+                    s = _normalize_entity_token(chunk)
                     if not s or len(s) < 2 or len(s) > 80:
                         continue
                     sl = s.lower()
@@ -1339,7 +1343,7 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
                         continue
                     # Must contain at least one known skill/title keyword or be mostly capitalized to be a candidate
                     is_candidate = False
-                    if any(skill in sl for skill in SKILLS_DB) or any(title in sl for title in TITLES_DB):
+                    if any(skill in sl for skill in _SKILLS_DB_LOWER) or any(title in sl for title in _TITLES_DB_LOWER):
                         is_candidate = True
                     
                     if not is_candidate:
@@ -1373,19 +1377,6 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
                         elif lab == 'EDU_FIELD':
                             edu_extra_field.append(s)
 
-                    # Merge deduped
-                    def _merge_unique(dst: List[str], src: List[str]) -> List[str]:
-                        seen = {d.lower() for d in dst}
-                        for it in src:
-                            t = _norm(it)
-                            if not t:
-                                continue
-                            if t.lower() in seen:
-                                continue
-                            seen.add(t.lower())
-                            dst.append(t)
-                        return dst
-
                     if new_skills:
                         try:
                             from app.services.skills_dict import map_to_canonical
@@ -1393,7 +1384,7 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
                             canon, _ = map_to_canonical(merged)
                             skills = canon
                         except Exception:
-                            skills = sorted(set(skills) | { _norm(s) for s in new_skills })
+                            skills = sorted(set(skills) | {_normalize_entity_token(s) for s in new_skills})
                     if new_titles:
                         titles = sorted(set(_merge_unique(list(titles), new_titles)))
                     if new_orgs:
@@ -1407,14 +1398,14 @@ def extract_resume_entities(text: str) -> Dict[str, Any]:
                         if education:
                             last = education[-1]
                             if edu_extra_deg and not last.get('degree'):
-                                last['degree'] = _norm(edu_extra_deg[0])
+                                last['degree'] = _normalize_entity_token(edu_extra_deg[0])
                             if edu_extra_field and not last.get('field'):
-                                last['field'] = _norm(edu_extra_field[0])
+                                last['field'] = _normalize_entity_token(edu_extra_field[0])
                         # Append remaining if still any
                         for d in edu_extra_deg[1:] if education and education[-1].get('degree') else edu_extra_deg:
-                            education.append({"degree": _norm(d), "field": None, "institution": None, "start": None, "end": None})
+                            education.append({"degree": _normalize_entity_token(d), "field": None, "institution": None, "start": None, "end": None})
                         for f in edu_extra_field[1:] if education and education[-1].get('field') else edu_extra_field:
-                            education.append({"degree": None, "field": _norm(f), "institution": None, "start": None, "end": None})
+                            education.append({"degree": None, "field": _normalize_entity_token(f), "institution": None, "start": None, "end": None})
     except Exception:
         # swallow enrichment errors silently
         pass

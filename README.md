@@ -322,6 +322,7 @@ Graceful fallback to transformer-based models when API key is unavailable.
 - [ ] Review security settings in Docker Compose
 
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed production deployment guide.
+For AWS hosting on ECS/Fargate, follow [AWS_DEPLOYMENT.md](./AWS_DEPLOYMENT.md).
 
 ## 🤝 Contributing
 

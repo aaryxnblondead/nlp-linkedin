@@ -24,9 +24,10 @@ app = FastAPI()
 frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:3000").strip()
 extra_origins_env = os.getenv("EXTRA_CORS_ORIGINS", "").strip()
 extra_origins = [o.strip() for o in extra_origins_env.split(",") if o.strip()] if extra_origins_env else []
-default_dev_origins = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+is_production = bool(getattr(_cfg, "IS_PRODUCTION", False))
+default_dev_origins = [] if is_production else [
+	"http://localhost:3000",
+	"http://127.0.0.1:3000",
 ]
 origins = list({frontend_origin, *default_dev_origins, *extra_origins})
 cors_regex = os.getenv("CORS_ORIGIN_REGEX")

@@ -1,21 +1,26 @@
-version: '3.8'
 services:
   postgres:
     image: postgres:15
+    restart: unless-stopped
+    env_file:
+      - ./.env.production
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
+      POSTGRES_DB: ${POSTGRES_DB:-qualifyai}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   redis:
     image: redis:7
+    restart: unless-stopped
+    env_file:
+      - ./.env.production
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -23,35 +28,44 @@ services:
       retries: 10
 
   backend:
+    restart: unless-stopped
+    env_file:
+      - ./.env.production
     build:
       context: ./backend
       args:
-        - SPACY_MODEL=${SPACY_MODEL}
+        - SPACY_MODEL=${SPACY_MODEL:-en_core_web_sm}
     environment:
+      APP_ENV: production
       PYTHONPATH: /app
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
+      POSTGRES_DB: ${POSTGRES_DB:-qualifyai}
       POSTGRES_SERVER: postgres
       POSTGRES_PORT: 5432
-      REDIS_URL: ${REDIS_URL}
-      SPACY_MODEL: ${SPACY_MODEL}
+      DATABASE_URL: ${DATABASE_URL:-}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      SPACY_MODEL: ${SPACY_MODEL:-en_core_web_sm}
+      SPACY_AUTO_DOWNLOAD: ${SPACY_AUTO_DOWNLOAD:-false}
+      RUN_MIGRATIONS: ${RUN_MIGRATIONS:-true}
+      UVICORN_WORKERS: ${UVICORN_WORKERS:-2}
+      UVICORN_TIMEOUT_KEEP_ALIVE: ${UVICORN_TIMEOUT_KEEP_ALIVE:-30}
       # LLM/Embeddings
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      GEN_PROVIDER: ${GEN_PROVIDER}
-      GEMINI_MODEL_ID: ${GEMINI_MODEL_ID}
-      HF_TOKEN: ${HF_TOKEN}
-      HF_MODEL_ID: ${HF_MODEL_ID}
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEN_PROVIDER: ${GEN_PROVIDER:-google}
+      GEMINI_MODEL_ID: ${GEMINI_MODEL_ID:-gemini-1.5-flash}
+      HF_TOKEN: ${HF_TOKEN:-}
+      HF_MODEL_ID: ${HF_MODEL_ID:-google/gemma-2-2b-it}
       # Flags
-      USE_GENERATOR: ${USE_GENERATOR}
-      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY}
-      USE_LLM_NAME: ${USE_LLM_NAME}
-      USE_LLM_SKILLS_ENRICH: ${USE_LLM_SKILLS_ENRICH}
-      USE_LLM_SCORING: ${USE_LLM_SCORING}
-      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH}
-      CHROMA_DIR: ${CHROMA_DIR}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
-      EXTRA_CORS_ORIGINS: ${EXTRA_CORS_ORIGINS}
+      USE_GENERATOR: ${USE_GENERATOR:-true}
+      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY:-true}
+      USE_LLM_NAME: ${USE_LLM_NAME:-true}
+      USE_LLM_SKILLS_ENRICH: ${USE_LLM_SKILLS_ENRICH:-true}
+      USE_LLM_SCORING: ${USE_LLM_SCORING:-true}
+      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH:-backend/data/skills_dynamic.json}
+      CHROMA_DIR: ${CHROMA_DIR:-chroma_db}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost}
+      EXTRA_CORS_ORIGINS: ${EXTRA_CORS_ORIGINS:-}
       # CORS_ORIGIN_REGEX: ${CORS_ORIGIN_REGEX}
     depends_on:
       postgres:
@@ -60,32 +74,45 @@ services:
         condition: service_healthy
     volumes:
       - uploads:/app/uploaded_resumes
-      - chromadb:/app/${CHROMA_DIR}
+      - chromadb:/app/${CHROMA_DIR:-chroma_db}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8000/api/v1/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 40s
 
   celery:
+    restart: unless-stopped
+    env_file:
+      - ./.env.production
     build:
       context: ./backend
       args:
-        - SPACY_MODEL=${SPACY_MODEL}
+        - SPACY_MODEL=${SPACY_MODEL:-en_core_web_sm}
     command: celery -A app.worker.celery_app.celery_app worker --loglevel=info
     environment:
+      APP_ENV: production
       PYTHONPATH: /app
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-12345678}
+      POSTGRES_DB: ${POSTGRES_DB:-qualifyai}
       POSTGRES_SERVER: postgres
       POSTGRES_PORT: 5432
-      REDIS_URL: ${REDIS_URL}
-      SPACY_MODEL: ${SPACY_MODEL}
-      GOOGLE_API_KEY: ${GOOGLE_API_KEY}
-      GEN_PROVIDER: ${GEN_PROVIDER}
-      GEMINI_MODEL_ID: ${GEMINI_MODEL_ID}
-      HF_TOKEN: ${HF_TOKEN}
-      HF_MODEL_ID: ${HF_MODEL_ID}
-      USE_GENERATOR: ${USE_GENERATOR}
-      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY}
-      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH}
-      CHROMA_DIR: ${CHROMA_DIR}
+      DATABASE_URL: ${DATABASE_URL:-}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      SPACY_MODEL: ${SPACY_MODEL:-en_core_web_sm}
+      SPACY_AUTO_DOWNLOAD: ${SPACY_AUTO_DOWNLOAD:-false}
+      RUN_MIGRATIONS: "false"
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      GEN_PROVIDER: ${GEN_PROVIDER:-google}
+      GEMINI_MODEL_ID: ${GEMINI_MODEL_ID:-gemini-1.5-flash}
+      HF_TOKEN: ${HF_TOKEN:-}
+      HF_MODEL_ID: ${HF_MODEL_ID:-google/gemma-2-2b-it}
+      USE_GENERATOR: ${USE_GENERATOR:-true}
+      CHAT_GROUNDED_ONLY: ${CHAT_GROUNDED_ONLY:-true}
+      SKILLS_DYNAMIC_PATH: ${SKILLS_DYNAMIC_PATH:-backend/data/skills_dynamic.json}
+      CHROMA_DIR: ${CHROMA_DIR:-chroma_db}
     depends_on:
       backend:
         condition: service_started
@@ -93,14 +120,17 @@ services:
         condition: service_healthy
     volumes:
       - uploads:/app/uploaded_resumes
-      - chromadb:/app/${CHROMA_DIR}
+      - chromadb:/app/${CHROMA_DIR:-chroma_db}
 
   # Unified-origin frontend via Nginx reverse proxy to backend
   web:
+    restart: unless-stopped
+    env_file:
+      - ./.env.production
     build:
       context: ./frontend
       args:
-        - REACT_APP_API_URL=${REACT_APP_API_URL}
+        - REACT_APP_API_URL=${REACT_APP_API_URL:-/api/v1}
     ports:
       - "80:80"
     depends_on:

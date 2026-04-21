@@ -1,5 +1,7 @@
 # Deployment Guide
 
+For AWS ECS/Fargate deployment, see [AWS_DEPLOYMENT.md](./AWS_DEPLOYMENT.md).
+
 This project ships with a production-ready Docker setup for:
 - Postgres (database)
 - Redis (Celery broker)
@@ -40,6 +42,8 @@ docker compose logs -f backend
 - CORS is permissive in `backend/app/main.py` for development. Restrict in production.
 - Uploaded resumes and ChromaDB data are persisted via named volumes `uploads` and `chromadb`.
 - Celery worker processes asynchronous tasks. If not required, you can remove the `celery` service.
+- You can provide `DATABASE_URL` (recommended for AWS RDS) instead of individual Postgres variables.
+- Set `RUN_MIGRATIONS=false` for steady-state backend replicas and run migrations in a one-off task.
 
 ## Switching spaCy Model
 To use a larger model:

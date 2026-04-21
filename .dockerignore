@@ -1,0 +1,33 @@
+# VCS
+.git
+.github
+.vscode
+
+# Python artifacts
+**/__pycache__/
+**/*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Node artifacts
+**/node_modules/
+**/build/
+
+# Local env/secrets
+.env
+.env.*
+*.pem
+
+# Large local data not needed in image builds
+chroma_db/
+backend/chroma_db/
+uploaded_resumes/
+backend/uploaded_resumes/
+real resumes/
+resumedataset/
+resumes/
+
+# OS noise
+.DS_Store
+Thumbs.db

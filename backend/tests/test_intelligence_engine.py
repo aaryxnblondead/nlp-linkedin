@@ -1,10 +1,15 @@
 import os
 import sys
+import datetime
 
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 sys.path.insert(0, PROJECT_ROOT)
 
 from app.worker.tasks.intelligence_engine import create_structured_resume, generate_candidate_insights
+
+
+def _days_ago_iso(days: int) -> str:
+    return (datetime.date.today() - datetime.timedelta(days=days)).isoformat()
 
 STRONG_SKILLS_LOW_SENTIMENT = {
     "resume": """
@@ -18,7 +23,7 @@ STRONG_SKILLS_LOW_SENTIMENT = {
     "linkedin": {
         "name": "Sam Expert",
         "posts": ["I hate how bad the latest release was.", "Poor quality in the new service.", "Fail after fail."],
-        "activity_timestamps": ["2025-08-01", "2025-08-10"]
+        "activity_timestamps": [_days_ago_iso(25), _days_ago_iso(10)]
     }
 }
 
@@ -34,7 +39,10 @@ INTERN_HIGH_ACTIVITY = {
     "linkedin": {
         "name": "Alex Intern",
         "posts": ["Learning a lot!", "Great mentorship!", "Good sprint so far!"],
-        "activity_timestamps": ["2025-09-01","2025-09-03","2025-09-05","2025-09-07","2025-09-09","2025-09-11","2025-09-13","2025-09-15","2025-09-17","2025-09-19"]
+        "activity_timestamps": [
+            _days_ago_iso(2), _days_ago_iso(4), _days_ago_iso(6), _days_ago_iso(8), _days_ago_iso(10),
+            _days_ago_iso(12), _days_ago_iso(14), _days_ago_iso(16), _days_ago_iso(18), _days_ago_iso(20),
+        ]
     }
 }
 

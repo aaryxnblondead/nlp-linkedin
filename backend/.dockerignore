@@ -1,0 +1,22 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Local runtime data
+uploaded_resumes/
+chroma_db/
+*.sqlite3
+
+# Local env files
+.env
+.env.*
+
+# Dev and VCS noise
+tests/
+.git/
+.gitignore
+.DS_Store
+Thumbs.db

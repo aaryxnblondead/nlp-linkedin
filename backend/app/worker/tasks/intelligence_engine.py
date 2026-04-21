@@ -1,10 +1,22 @@
 # Module B: Intelligence Engine
 from typing import List, Dict, Any, Tuple
+import datetime
 import re
 from app.services.ner import extract_resume_entities
-import os
 
-def create_structured_resume(resume_text, linkedin_data):
+
+BULLET_PREFIXES = ("-", "*", "•")
+
+
+def _clamp(value: float, low: float, high: float) -> float:
+    return max(low, min(high, value))
+
+
+def _clamp_unit(value: float) -> float:
+    return _clamp(value, 0.0, 1.0)
+
+
+def create_structured_resume(resume_text: str, linkedin_data: Dict[str, Any] | None) -> Dict[str, Any]:
     # Use robust NER service (spaCy + regex) to extract candidate entities
     entities = extract_resume_entities(resume_text or "")
     structured = {
@@ -36,29 +48,26 @@ def analyze_text_sentiment(text: str) -> float:
         vs = SentimentIntensityAnalyzer()
         s = vs.polarity_scores(text or "")
         # compound is in [-1, 1]
-        return float(max(-1.0, min(1.0, s.get('compound', 0.0))))
+        return float(_clamp(s.get('compound', 0.0), -1.0, 1.0))
     except Exception:
         text_l = (text or "").lower()
         pos = sum(text_l.count(w) for w in ["led", "achieved", "improved", "optimized", "success", "delivered", "designed", "built"])
         neg = sum(text_l.count(w) for w in ["failed", "issue", "bug", "problem", "error", "delay", "blocked"])
         total = max(1, pos + neg)
         score = (pos - neg) / total
-        return max(-1.0, min(1.0, score))
+        return _clamp(score, -1.0, 1.0)
 
 def compute_activity_score_from_resume(text: str) -> float:
     # Very naive proxy from resume: counts of recent years imply activity
-    import datetime
     year = datetime.datetime.now(datetime.UTC).year
     recent_hits = 0
     for y in range(year-2, year+1):
         recent_hits += (text or "").count(str(y))
-    return max(0.0, min(1.0, recent_hits / 6.0))
+    return _clamp_unit(recent_hits / 6.0)
 
 
 def compute_activity_score(structured_resume: Dict[str, Any]) -> float:
     """Blend LinkedIn activity timestamps with resume heuristics."""
-    import datetime
-
     data = structured_resume.get("linkedin") or {}
     timestamps = data.get("activity_timestamps") or []
     if timestamps:
@@ -80,7 +89,7 @@ def compute_activity_score(structured_resume: Dict[str, Any]) -> float:
                 recent_count += 1
         # 8+ recent activities saturate the score, 0 if none
         if recent_count:
-            return max(0.0, min(1.0, recent_count / 8.0))
+            return _clamp_unit(recent_count / 8.0)
     # Fallback to resume-based proxy
     return compute_activity_score_from_resume(structured_resume.get("raw_text") or "")
 
@@ -107,7 +116,6 @@ def _parse_date_token(tok: str) -> Tuple[int, int] | None:
     if y:
         return int(y.group(1)), 6
     if re.match(r"(?i)^(present|current)$", tok):
-        import datetime
         now = datetime.datetime.now(datetime.UTC)
         return now.year, now.month
     return None
@@ -189,13 +197,13 @@ def _project_quality_from_resume(text: str) -> float:
     # normalize: cap at reasonable counts
     v_norm = min(1.0, v_hits / 12.0)
     o_norm = min(1.0, o_hits / 10.0)
-    return max(0.0, min(1.0, 0.6 * v_norm + 0.4 * o_norm))
+    return _clamp_unit(0.6 * v_norm + 0.4 * o_norm)
 
 def _ownership_keywords_score(text: str) -> float:
     t = (text or "").lower()
     kws = ["led","owned","ownership","spearheaded","drove","architected","delivered","initiated","managed","mentored","orchestrated","championed"]
     hits = sum(t.count(k) for k in kws)
-    return max(0.0, min(1.0, hits / 12.0))
+    return _clamp_unit(hits / 12.0)
 
 def analyze_confidence_tone(text: str) -> float:
     """Return 0..1 confidence/ownership tone.
@@ -212,7 +220,7 @@ def _extract_project_bullets(text: str) -> List[str]:
         if not s:
             continue
         lower = s.lower()
-        if s.startswith(("-", "*", "•", "•")) or ("project" in lower) or any(v in lower for v in ["built","designed","implemented","optimized","migrated","deployed","architected"]):
+        if s.startswith(BULLET_PREFIXES) or ("project" in lower) or any(v in lower for v in ["built","designed","implemented","optimized","migrated","deployed","architected"]):
             picks.append(s)
     # Deduplicate and limit
     seen = set()
@@ -232,7 +240,6 @@ def _metrics_boost(line: str) -> float:
     l = (line or "").lower()
     score = 0.0
     # Percent improvements
-    import re
     if re.search(r"\b(\d{1,3})\s?%\b|\bpercent\b", l):
         score += 0.5
     # Multipliers like 2x, 3x
@@ -244,7 +251,7 @@ def _metrics_boost(line: str) -> float:
     # Cost/reliability/latency specific
     if re.search(r"\b(cost|latency|throughput|reliability|p95|p99)\b", l):
         score += 0.2
-    return max(0.0, min(1.0, score))
+    return _clamp_unit(score)
 
 def _seniority_score(titles: List[str]) -> float:
     if not titles:
@@ -346,7 +353,7 @@ def generate_candidate_insights(structured_resume: Dict[str, Any], role: str | N
     except Exception:
         pass
     # Heavier emphasis on concrete project signals
-    endorsements_projects_score = max(0.0, min(1.0, 0.6 * pq_text + 0.3 * metrics_avg + 0.1 * confidence_tone))
+    endorsements_projects_score = _clamp_unit(0.6 * pq_text + 0.3 * metrics_avg + 0.1 * confidence_tone)
 
     # Reweight to prioritize experience and projects; reduce sentiment influence
     base_weights = {
@@ -389,7 +396,7 @@ def generate_candidate_insights(structured_resume: Dict[str, Any], role: str | N
         resilience_bonus = 0.10
 
     overall = max(0.0, weighted_sum - penalty * role_weights["consistency"]) + resilience_bonus
-    overall = max(0.0, min(1.0, overall)) * 100.0
+    overall = _clamp_unit(overall) * 100.0
     rating_int = int(round(min(100.0, max(0.0, overall))))
 
     if rating_int >= 90:
