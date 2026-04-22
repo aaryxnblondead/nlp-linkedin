@@ -324,6 +324,256 @@ Graceful fallback to transformer-based models when API key is unavailable.
 See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed production deployment guide.
 For AWS hosting on ECS/Fargate, follow [AWS_DEPLOYMENT.md](./AWS_DEPLOYMENT.md).
 
+### AWS Deployment Deep Dive (Extreme Detail)
+
+This section documents the full cloud architecture and delivery story for QualifyAI, including design decisions, implementation phases, production issues, and how they were resolved.
+
+#### 1. Architecture Overview
+
+QualifyAI runs on a serverless container architecture on AWS. "Serverless" here means AWS manages the underlying compute hosts while we manage the containers and application lifecycle.
+
+| Component | AWS Service | Purpose |
+| --- | --- | --- |
+| Compute | AWS Fargate (Amazon ECS) | Runs Backend (FastAPI/Python), Frontend (Nginx/React), and optional Celery worker without managing EC2 servers |
+| Persistent Shared Storage | Amazon EFS | Stores uploaded resumes and ChromaDB files so data survives container restarts and can be shared across tasks |
+| Relational Database | Amazon RDS for PostgreSQL | Stores users, applicants, scoring metadata, and other transactional data |
+| Secrets and Config | AWS Systems Manager Parameter Store | Stores sensitive runtime configuration such as `DATABASE_URL`, `GOOGLE_API_KEY`, and model tokens |
+| External Traffic Entry | Application Load Balancer (ALB) | Receives traffic on port 80/443 and routes requests to ECS services using path rules |
+
+Request flow in production:
+1. Browser sends traffic to ALB DNS (for example, `http://qualifyai-alb-...elb.amazonaws.com`).
+2. ALB listener evaluates path rules and forwards traffic to target groups.
+3. `/*` is routed to the web target group (frontend Nginx container on port 80).
+4. `/api/*` is routed to backend target group (FastAPI container on port 8000).
+5. Backend reads/writes structured data in RDS and shared files/vectors on EFS.
+6. Celery (if deployed) handles async jobs using Redis as broker and can also use EFS-backed assets.
+
+#### 2. Phase-by-Phase Breakdown
+
+##### Phase 1: Infrastructure Foundations
+
+Goal: build a highly available network and storage base before deploying application code.
+
+What was provisioned:
+1. Custom VPC for isolation.
+2. Subnets across three Availability Zones in `us-east-1` (`a`, `b`, `c`) for high availability.
+3. Security groups for ALB, ECS services, RDS, and EFS.
+4. EFS file system with mount targets in each AZ used by ECS tasks.
+5. RDS PostgreSQL instance in private networking context.
+
+Why this matters:
+1. Multi-AZ subnet design keeps the app online even if one AZ is impaired.
+2. EFS solves the stateless-container problem by externalizing durable file/vector data.
+3. Isolated network boundaries reduce blast radius and tighten security posture.
+
+Implementation details to capture in infrastructure-as-code or console setup:
+1. VPC DNS Hostnames and DNS Resolution must be enabled.
+2. EFS mount targets must exist in each subnet used by Fargate tasks.
+3. Security groups must allow NFS (`2049`) from ECS task security group to EFS security group.
+4. RDS security group must allow PostgreSQL (`5432`) from ECS task security group.
+5. ALB security group allows inbound `80/443` from internet and outbound to ECS service ports.
+
+##### Phase 2: Containerization and Amazon ECR Pipeline
+
+Goal: package frontend/backend into reproducible images and publish to a managed registry.
+
+What was implemented:
+1. Backend image built from `backend/Dockerfile` with runtime entrypoint in `backend/docker-entrypoint.sh`.
+2. Frontend image built from `frontend/Dockerfile` serving static React build via Nginx.
+3. Images pushed to ECR repositories using AWS CLI from PowerShell/local terminal.
+
+Representative pipeline:
+1. Authenticate Docker to ECR.
+2. Build backend and frontend images.
+3. Tag each image with ECR URI.
+4. Push both images to ECR.
+
+PowerShell-style command sequence:
+
+```powershell
+$AWS_REGION = "us-east-1"
+$AWS_ACCOUNT_ID = "123456789012"
+$BACKEND_REPO = "qualifyai-backend"
+$FRONTEND_REPO = "qualifyai-frontend"
+
+aws ecr get-login-password --region $AWS_REGION |
+  docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+
+docker build -t $BACKEND_REPO ./backend
+docker build -t $FRONTEND_REPO ./frontend
+
+$BACKEND_URI = "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$BACKEND_REPO:latest"
+$FRONTEND_URI = "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$FRONTEND_REPO:latest"
+
+docker tag "$BACKEND_REPO:latest" $BACKEND_URI
+docker tag "$FRONTEND_REPO:latest" $FRONTEND_URI
+
+docker push $BACKEND_URI
+docker push $FRONTEND_URI
+```
+
+##### Phase 3: ECS Task Definitions (Container Blueprints)
+
+Goal: define exactly how each container runs in production.
+
+Task definition design:
+1. `qualifyai-backend-task` exposes container port `8000`.
+2. `qualifyai-web-task` exposes container port `80`.
+3. Optional `qualifyai-celery-task` runs worker process without ALB listener.
+
+Critical task definition fields:
+1. `executionRoleArn` for pulling ECR images and writing logs.
+2. `taskRoleArn` for runtime AWS API access (for example, reading SSM parameters).
+3. `logConfiguration` for CloudWatch logs.
+4. `secrets` map for injecting secure values from Parameter Store.
+5. EFS volume mappings mounted into `/app/uploaded_resumes` and `/app/chroma_db`.
+
+Example secrets injection pattern:
+
+```json
+{
+  "name": "backend",
+  "secrets": [
+    {
+      "name": "DATABASE_URL",
+      "valueFrom": "arn:aws:ssm:us-east-1:123456789012:parameter/qualifyai/prod/DATABASE_URL"
+    },
+    {
+      "name": "GOOGLE_API_KEY",
+      "valueFrom": "arn:aws:ssm:us-east-1:123456789012:parameter/qualifyai/prod/GOOGLE_API_KEY"
+    }
+  ]
+}
+```
+
+ALB listener and target group strategy:
+1. Backend service target group health check path: `/api/v1/health`.
+2. Web service target group health check path: `/`.
+3. Listener rule priority: `/api/*` must have higher priority than catch-all `/*`.
+
+##### Phase 4: One-Time Database Migration Task
+
+Goal: apply schema migrations before taking production traffic.
+
+What was done:
+1. Ran a standalone ECS task using backend image.
+2. Set `RUN_MIGRATIONS=true` for that one-time task.
+3. Confirmed Alembic created/upgraded RDS tables.
+4. Set regular backend services to `RUN_MIGRATIONS=false` for steady-state operation.
+
+Why this is critical:
+1. Prevents race conditions where multiple replicas run migrations concurrently.
+2. Reduces startup risk for regular app tasks.
+3. Ensures database compatibility before the ALB sends live requests.
+
+#### 3. Engineering Challenges and Solutions
+
+This section demonstrates real-world debugging and operational problem-solving.
+
+##### Challenge A: IAM AccessDenied Errors (Identity and Permissions)
+
+Symptoms:
+1. ECS tasks failed to initialize logging or retrieve secure parameters.
+2. CloudWatch and SSM operations returned AccessDenied errors.
+
+Root cause:
+1. Task execution role lacked required permissions for selected AWS actions.
+
+Resolution:
+1. Added targeted inline policies to `ecsTaskExecutionRole` and/or task role.
+2. Granted minimum required actions for CloudWatch Logs group/stream creation and writes.
+3. Granted SSM Parameter Store reads (`GetParameter`, `GetParameters`, optionally `GetParametersByPath`).
+4. Added ECR image pull actions where missing.
+
+Validation:
+1. New task launch succeeded.
+2. Logs appeared in CloudWatch.
+3. Secrets resolved at runtime with no AccessDenied entries.
+
+##### Challenge B: "Host Not Found" Between Frontend and Backend
+
+Symptoms:
+1. Frontend container returned upstream resolution errors when trying to reach backend.
+2. Browser requests to API paths failed with 502/503-style behavior.
+
+Root cause:
+1. Backend hostname used by Nginx was not resolvable in ECS networking context.
+
+Resolution:
+1. Implemented AWS Service Connect (or equivalent service discovery) to provide stable internal DNS.
+2. Used a private namespace (for example, `qualifyai.local`) so services can communicate by service name instead of ephemeral IPs.
+
+Validation:
+1. Name resolution works from frontend task to backend service endpoint.
+2. API requests complete successfully under load balancer path routing.
+
+##### Challenge C: EFS Mount Initialization Errors
+
+Symptoms:
+1. ECS task startup failed with `ResourceInitializationError` when mounting EFS.
+
+Root cause:
+1. Missing/incomplete EFS mount targets in active subnets or DNS-related VPC misconfiguration.
+
+Resolution:
+1. Enabled and verified VPC DNS hostnames/resolution.
+2. Created/verified EFS mount targets in each relevant subnet/AZ.
+3. Corrected security group rules allowing NFS traffic from ECS tasks to EFS.
+
+Validation:
+1. Tasks transition to healthy/running state.
+2. Files written by one task are visible to other tasks sharing EFS.
+
+##### Challenge D: 504 Gateway Timeout from ALB
+
+Symptoms:
+1. External requests reached ALB but timed out before container response.
+
+Root cause:
+1. ALB-to-task network path was blocked by security group rule gaps.
+
+Resolution:
+1. Updated security group inbound rules to allow required internal traffic paths.
+2. During active debugging, temporarily allowed broader internal VPC traffic to isolate path issues.
+3. After verification, tighten rules to least privilege (recommended long-term posture).
+
+Validation:
+1. Target group health checks turn healthy.
+2. End-user requests stop timing out.
+3. ALB `HTTPCode_Target_5XX_Count` and timeout errors drop.
+
+#### 4. Final Result and Production Outcomes
+
+QualifyAI is now a decoupled, production-ready system with strong operational characteristics.
+
+Scalability:
+1. Increase ECS desired task count for backend/web services during traffic spikes.
+2. Use target tracking autoscaling on CPU/memory/ALB request metrics.
+
+Security:
+1. No secrets hardcoded in container images.
+2. Runtime secret injection handled via encrypted SSM parameters and IAM roles.
+
+Persistence and Reliability:
+1. Uploaded resumes and vector data persist on EFS across task restarts.
+2. Structured transactional data persists in RDS PostgreSQL.
+
+Operational control:
+1. Centralized logs in CloudWatch for backend/frontend diagnostics.
+2. Health checks enforce automated recovery and safer deployments.
+
+#### 5. Recommended Post-Deployment Validation (Runbook)
+
+1. Confirm ALB routing for both path classes.
+2. Confirm `GET /` returns the frontend application.
+3. Confirm `GET /api/v1/health` returns JSON with `ok: true`.
+4. Confirm target group health is green for both backend and web.
+5. Confirm backend can read secrets from SSM at startup.
+6. Confirm EFS directories contain shared data after resume upload.
+7. Confirm RDS connectivity by creating user/applicant records.
+
+For focused command-level deployment steps, continue to use [AWS_DEPLOYMENT.md](./AWS_DEPLOYMENT.md) as the quick execution runbook.
+
 ## 🤝 Contributing
 
 1. Fork the repository

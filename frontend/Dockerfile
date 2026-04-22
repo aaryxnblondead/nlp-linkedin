@@ -6,7 +6,7 @@ COPY package-lock.json /app/package-lock.json
 RUN npm ci || npm install
 COPY . /app
 # Build-time API URL can be overridden via build arg
-ARG REACT_APP_API_URL=http://localhost:8000/api/v1
+ARG REACT_APP_API_URL=/api/v1
 ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 RUN npm run build
 
